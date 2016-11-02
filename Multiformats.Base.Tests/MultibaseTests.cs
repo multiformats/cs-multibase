@@ -43,7 +43,7 @@ namespace Multiformats.Base.Tests
         public void RoundTrip_Base58Bitcoin() => TestRoundTrip(b => Multibase.Base58.Encode(b));
 
         [Test]
-        public void RoundTrip_Base58Flickr() => TestRoundTrip(b => Multibase.Base58.Encode(b, false));
+        public void RoundTrip_Base58Flickr() => TestRoundTrip(b => Multibase.Base58.Encode(b, Base58Alphabet.Flickr));
 
         [Test]
         public void RoundTrip_Base64() => TestRoundTrip(Multibase.Base64.Encode);
@@ -103,7 +103,7 @@ namespace Multiformats.Base.Tests
         public void EncodeDecode_Base58Bitcoin() => TestEncodeDecode(b => Multibase.Base58.Encode(b), "StV1DL6CwTryKyV");
 
         [Test]
-        public void EncodeDecode_Base58Flickr() => TestEncodeDecode(b => Multibase.Base58.Encode(b, false), "rTu1dk6cWsRYjYu");
+        public void EncodeDecode_Base58Flickr() => TestEncodeDecode(b => Multibase.Base58.Encode(b, Base58Alphabet.Flickr), "rTu1dk6cWsRYjYu");
 
         [Test]
         public void EncodeDecode_Base64() => TestEncodeDecode(Multibase.Base64.Encode, "aGVsbG8gd29ybGQ");

@@ -8,9 +8,9 @@ namespace Multiformats.Base
         public override char[] Identifiers => new[] { 'Z', 'z' };
         public override char DefaultIdentifier => Identifiers[1];
 
-        public override string Encode(byte[] data) => Encode(data, true);
+        public override string Encode(byte[] data) => Encode(data, Base58Alphabet.Bitcoin);
 
-        public string Encode(byte[] data, bool bitcoin) => (bitcoin ? 'z' : 'Z') + (bitcoin ? Base58.Bitcoin.Encode(data) : Base58.Flickr.Encode(data));
+        public string Encode(byte[] data, Base58Alphabet alphabet) => (alphabet == Base58Alphabet.Bitcoin ? 'z' : 'Z') + (alphabet == Base58Alphabet.Bitcoin ? Base58.Bitcoin.Encode(data) : Base58.Flickr.Encode(data));
 
         public override byte[] Decode(string str)
         {
@@ -27,5 +27,11 @@ namespace Multiformats.Base
                     throw new NotSupportedException($"Unsupported identifier: {id}");
             }
         }
+    }
+
+    public enum Base58Alphabet
+    {
+        Bitcoin,
+        Flickr
     }
 }

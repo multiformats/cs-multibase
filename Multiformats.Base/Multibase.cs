@@ -18,13 +18,30 @@ namespace Multiformats.Base
             Base2, Base8, Base10, Base16, Base32, Base58, Base64
         };
 
+        public static string Encode<TEncoding>(byte[] data) where TEncoding : MultibaseEncoding
+        {
+            var encoding = _encodings.OfType<TEncoding>().SingleOrDefault();
+            if (encoding == null)
+                throw new NotSupportedException($"Encoding type is not supported: {typeof(TEncoding).Name}");
+
+            return encoding.Encode(data);
+        }
+
+        public static string EncodeRaw<TEncoding>(byte[] data) where TEncoding : MultibaseEncoding => Encode<TEncoding>(data).Substring(1);
+
         public static string Encode(MultibaseEncoding encoding, byte[] data) => encoding.Encode(data);
 
         public static string EncodeRaw(MultibaseEncoding encoding, byte[] data) => encoding.Encode(data).Substring(1);
 
         public static byte[] Decode(string s)
         {
-            var encoding = _encodings.SingleOrDefault(e => e.Identifiers.Contains(s[0]));
+            MultibaseEncoding encoding;
+            return Decode(s, out encoding);
+        }
+
+        public static byte[] Decode(string s, out MultibaseEncoding encoding)
+        {
+            encoding = _encodings.SingleOrDefault(e => e.Identifiers.Contains(s[0]));
             if (encoding == null)
                 throw new NotSupportedException($"Encoding type is not supported: {s[0]}");
 
@@ -32,5 +49,14 @@ namespace Multiformats.Base
         }
 
         public static byte[] DecodeRaw(MultibaseEncoding encoding, string s) => encoding.Decode(encoding.DefaultIdentifier + s);
+
+        public static byte[] DecodeRaw<TEncoding>(string s) where TEncoding : MultibaseEncoding
+        {
+            var encoding = _encodings.OfType<TEncoding>().SingleOrDefault();
+            if (encoding == null)
+                throw new NotSupportedException($"Encoding type is not supported: {typeof(TEncoding).Name}");
+
+            return encoding.Decode(encoding.DefaultIdentifier + s);
+        }
     }
 }
