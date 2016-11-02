@@ -127,5 +127,19 @@ namespace Multiformats.Base.Tests
             var decoded = Multibase.Decode(encoded);
             Assert.That(decoded, Is.EqualTo(bytes));
         }
+
+        [Test]
+        public void TestCustomSeparator()
+        {
+            var bytes = Encoding.UTF8.GetBytes("hello world");
+            var encoded = Multibase.Base8.Encode(bytes, '-');
+
+            Assert.That(encoded, Is.EqualTo("7150-145-154-154-157-40-167-157-162-154-144"));
+
+            var decoded = Multibase.Base8.Decode(encoded, '-');
+
+            Assert.That(decoded, Is.EqualTo(bytes));
+            Assert.That(Encoding.UTF8.GetString(decoded), Is.EqualTo("hello world"));
+        }
     }
 }

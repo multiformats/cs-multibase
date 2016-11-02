@@ -25,11 +25,22 @@ var decoded = Multibase.Decode(encoded, out encoding);
 var rawDecoded = Multibase.DecodeRaw<Base32Encoding>(encoded);
 ```
 
-All `Encode` methods can be called with only one parameter, the data to be encoded, which will use the default options regarding padding and letter case. Those encodings have overloaded versions of `Encode` to let you specify those parameters.
+All `Encode` methods can be called with only one parameter, the data to be encoded, which will use the default options regarding padding and letter case.
+Some encodings have overloaded versions of `Encode` to let you specify additional options, like Base58 lets you select between Bitcoin and Flickr alphabet.
 
 ``` cs
 var encoded = Multibase.Base58.Encode(new byte[] {0,1,2,3}, Base58Alphabet.Flickr);
 ```
+
+For base 2, 8 and 10 you can specify your own separator, default is space.
+
+``` cs
+// separator is dash ('-')
+var encoded = Multibase.Base8.Encode(new byte[] {0,1,2,3}, '-');
+// = "7150-145-154-154-157-40-167-157-162-154-144"
+```
+
+Be aware that you can not pass in additional parameters to `Multibase.Decode` to decode, so you have to know what encoding it's in and call the base encoder directly if you use custom separators.
 
 ## Supported base encodings
 
@@ -38,5 +49,8 @@ var encoded = Multibase.Base58.Encode(new byte[] {0,1,2,3}, Base58Alphabet.Flick
 * Base10
 * Base16
 * Base32 (with and without padding, hex, upper/lower, zbase32)
+  * Default: no padding, lowercase
 * Base58 (bitcoin, flickr)
-* Base64 (¨with and without padding, url)
+  * Default: bitcoin
+* Base64 (with and without padding, url-safe)
+  * Default: no padding, not url-safe
