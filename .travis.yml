@@ -1,0 +1,8 @@
+language: csharp
+solution: Multiformats.Base.sln
+install:
+  - nuget restore Multiformats.Base.sln
+  - nuget install NUnit.Runners -Version 3.4.1 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release Multiformats.Base.sln
+  - mono ./testrunner/NUnit.ConsoleRunner.3.4.1/tools/nunit3-console.exe ./Multiformats.Base.Tests/bin/Release/Multiformats.Address.Tests.dll
