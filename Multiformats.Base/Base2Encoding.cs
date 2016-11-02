@@ -7,22 +7,12 @@ namespace Multiformats.Base
     {
         public override char[] Identifiers => new[] { '0' };
 
-        public override string Encode(byte[] data) => Identifiers[0] + string.Join(" ", data.Select(b => ToBase2((int)b)));
-        public override byte[] Decode(string str) => str.Substring(1).Split(' ').Select(c => (byte)Convert.ToByte(c, 2)).ToArray();
+        public const char DefaultSeparator = ' ';
 
-        private static string ToBase2(int b)
-        {
-            var chars = new char[] { '0', '0', '0', '0', '0', '0', '0', '0' };
-            var i = chars.Length;
-            while (b >= 2)
-            {
-                i--;
-                chars[i] = (b & 1) == 1 ? '1' : '0';
-                b >>= 1;
-            }
-            i--;
-            chars[i] = b == 1 ? '1' : '0';
-            return new string(chars.Skip(i).ToArray());
-        }
+        public string Encode(byte[] data, char separator) => Identifiers[0] + string.Join(new string(separator, 1), data.Select(b => Convert.ToString(b, 2)));
+        public override string Encode(byte[] data) => Encode(data, DefaultSeparator);
+
+        public byte[] Decode(string str, char separator) => str.Substring(1).Split(separator).Select(c => Convert.ToByte(c, 2)).ToArray();
+        public override byte[] Decode(string str) => Decode(str, DefaultSeparator);
     }
 }

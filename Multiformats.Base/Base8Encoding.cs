@@ -7,24 +7,12 @@ namespace Multiformats.Base
     {
         public override char[] Identifiers => new[] { '7' };
 
-        public override string Encode(byte[] data) => Identifiers[0] + string.Join(" ", data.Select(b => ToBase8((int)b)));
-        public override byte[] Decode(string str) => str.Substring(1).Split(' ').Select(c => (byte)Convert.ToByte(c, 8)).ToArray();
+        public const char DefaultSeparator = ' ';
 
-        private const string digits = "0123456789abcdefx";
+        public string Encode(byte[] data, char separator) => Identifiers[0] + string.Join(new string(separator, 1), data.Select(b => Convert.ToString(b, 8)));
+        public override string Encode(byte[] data) => Encode(data, DefaultSeparator);
 
-        private static string ToBase8(int b)
-        {
-            var chars = new char[16];
-            var i = chars.Length;
-            while (b >= 8)
-            {
-                i--;
-                chars[i] = digits[b & 7];
-                b >>= 3;
-            }
-            i--;
-            chars[i] = digits[b];
-            return new string(chars.Skip(i).ToArray());
-        }
+        public byte[] Decode(string str, char separator) => str.Substring(1).Split(separator).Select(c => Convert.ToByte(c, 8)).ToArray();
+        public override byte[] Decode(string str) => Decode(str, DefaultSeparator);
     }
 }

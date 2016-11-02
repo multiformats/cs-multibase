@@ -6,7 +6,12 @@ namespace Multiformats.Base
     {
         public override char[] Identifiers => new[] { '9' };
 
-        public override string Encode(byte[] data) => Identifiers[0] + string.Join(" ", data.Select(b => $"{b:D}"));
-        public override byte[] Decode(string str) => str.Substring(1).Split(' ').Select(byte.Parse).ToArray();
+        public const char DefaultSeparator = ' ';
+
+        public string Encode(byte[] data, char separator) => Identifiers[0] + string.Join(new string(separator, 1), data.Select(b => $"{b:D}"));
+        public override string Encode(byte[] data) => Encode(data, DefaultSeparator);
+
+        public byte[] Decode(string str, char separator) => str.Substring(1).Split(separator).Select(byte.Parse).ToArray();
+        public override byte[] Decode(string str) => Decode(str, DefaultSeparator);
     }
 }

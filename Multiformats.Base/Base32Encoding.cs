@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using SimpleBase;
+using WallF.BaseNEncodings;
 
 namespace Multiformats.Base
 {
