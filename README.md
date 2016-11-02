@@ -1,6 +1,6 @@
 # Multiformats.Base
 
-[![Build Status](https://travis-ci.org/tabrath/cs-base.svg?branch=master)](https://travis-ci.org/tabrath/cs-multibase)
+[![Build Status](https://travis-ci.org/tabrath/cs-multibase.svg?branch=master)](https://travis-ci.org/tabrath/cs-multibase)
 [![Build status](https://ci.appveyor.com/api/projects/status/w93pidw0npmvn5g4?svg=true)](https://ci.appveyor.com/project/tabrath/cs-multibase)
 [![NuGet Badge](https://buildstats.info/nuget/Multiformats.Base)](https://www.nuget.org/packages/Multiformats.Base/)
 
@@ -22,7 +22,7 @@ var decoded = Multibase.Decode(encoded);
 var decoded = Multibase.Decode(encoded, out encoding);
 
 // raw decode without multibase prefix
-var rawDecoded = Multibase.DecodeRaw<Base32>(encoded);
+var rawDecoded = Multibase.DecodeRaw<Base32Encoding>(encoded);
 ```
 
 All `Encode` methods can be called with only one parameter, the data to be encoded, which will use the default options regarding padding and letter case. Those encodings have overloaded versions of `Encode` to let you specify those parameters.
