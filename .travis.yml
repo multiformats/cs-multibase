@@ -1,5 +1,8 @@
 language: csharp
 solution: Multiformats.Base.sln
+branches:
+  only:
+    - master
 install:
   - nuget restore Multiformats.Base.sln
   - nuget install NUnit.Runners -Version 3.4.1 -OutputDirectory testrunner

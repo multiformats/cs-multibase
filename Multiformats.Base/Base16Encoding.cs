@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SimpleBase;
 
 namespace Multiformats.Base
@@ -10,7 +12,11 @@ namespace Multiformats.Base
 
         public override string Encode(byte[] data) => Encode(data, true);
 
-        public string Encode(byte[] data, bool uppercase) => (uppercase ? 'F' : 'f') + (uppercase ? Base16.EncodeUpper(data) : Base16.EncodeLower(data));
+        public string Encode(byte[] data, bool uppercase)
+        {
+            return (uppercase ? 'F' : 'f') +
+                   data.Aggregate(new StringBuilder(), (sb, b) => sb.Append(uppercase ? $"{b:X2}" : $"{b:x2}")).ToString();
+        }
 
         public override byte[] Decode(string str)
         {
@@ -23,7 +29,9 @@ namespace Multiformats.Base
             if (!uppercase && str.Any(char.IsUpper))
                 throw new Exception("Mismatch, wanted lowercase, got uppercase chars");
 
-            return Base16.Decode(str);
+            return Enumerable.Range(0, str.Length / 2)
+                    .Select(i => (byte)Convert.ToInt32(str.Substring(i * 2, 2), 16))
+                    .ToArray();
         }
     }
 }
