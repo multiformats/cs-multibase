@@ -4,7 +4,8 @@ branches:
   only:
     - master
 install:
-  - nuget restore Multiformats.Base.sln
+  - nuget restore Multiformats.Base/packages.config
+  - nuget restore Multiformats.Base.Tests/packages.config
   - nuget install NUnit.Runners -Version 3.4.1 -OutputDirectory testrunner
 script:
   - xbuild /p:Configuration=Release /t:Multiformats.Base:rebuild;Multiformats.Base.Tests:rebuild Multiformats.Base.sln
