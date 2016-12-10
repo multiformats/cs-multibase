@@ -7,5 +7,5 @@ install:
   - nuget restore Multiformats.Base.sln
   - nuget install NUnit.Runners -Version 3.4.1 -OutputDirectory testrunner
 script:
-  - xbuild /p:Configuration=Release Multiformats.Base.sln
+  - xbuild /p:Configuration=Release /t:Multiformats.Base:rebuild;Multiformats.Base.Tests:rebuild Multiformats.Base.sln
   - mono ./testrunner/NUnit.ConsoleRunner.3.4.1/tools/nunit3-console.exe ./Multiformats.Base.Tests/bin/Release/Multiformats.Base.Tests.dll
