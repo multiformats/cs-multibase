@@ -8,7 +8,6 @@ assembly_info:
   assembly_informational_version: '{version}'
 before_build:
   - nuget restore
-  - nuget install NUnit.Console -Version 3.5.0 -OutputDirectory .\packages
 build:
   project: Multiformats.Base.sln
   publish_nuget: true
@@ -22,7 +21,7 @@ deploy:
   on:
     branch: master
 after_test:
-  - .\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:".\packages\NUnit.ConsoleRunner.3.5.0\tools\nunit3-console.exe" -targetargs:".\Multiformats.Base\bin\Release\Multiformats.Base.dll" -filter:"-[*]* +[Multiformats.Base]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\coverage.xml 
+  - .\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:".\packages\NUnit.ConsoleRunner.3.5.0\tools\nunit3-console.exe" -targetargs:".\Multiformats.Base.Tests\bin\Release\Multiformats.Base.Tests.dll" -filter:"+[Multiformats.Base]* -[Multiformats.Base.Benchmarks]* -[Multiformats.Base.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\coverage.xml
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
   - pip install codecov
   - codecov -f ".\coverage.xml"
