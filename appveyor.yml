@@ -10,6 +10,7 @@ before_build:
   - nuget restore
   - nuget install NUnit.Console -Version 3.5.0 -OutputDirectory packages
 build:
+  project: Multiformats.Base.sln
   publish_nuget: true
   include_nuget_references: true
   parallel: true
