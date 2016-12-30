@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/tabrath/cs-multibase.svg?branch=master)](https://travis-ci.org/tabrath/cs-multibase)
 [![Build status](https://ci.appveyor.com/api/projects/status/w93pidw0npmvn5g4?svg=true)](https://ci.appveyor.com/project/tabrath/cs-multibase)
 [![NuGet Badge](https://buildstats.info/nuget/Multiformats.Base)](https://www.nuget.org/packages/Multiformats.Base/)
+[![codecov](https://codecov.io/gh/tabrath/cs-multibase/branch/master/graph/badge.svg)](https://codecov.io/gh/tabrath/cs-multibase)
 
 C# implementation of [multiformats/multibase](https://github.com/multiformats/multibase). As stated in the specs, multibase encoded strings are prefixed with an identifier for the base it's encoded in. There's a lot of [discussion going](https://github.com/multiformats/multibase/issues) on about this spec, so consider this work in progress.
 
