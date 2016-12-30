@@ -19,6 +19,12 @@ namespace Multiformats.Base
 
         public override string Encode(byte[] data) => Encode(data, Base58Alphabet.Bitcoin);
 
+        /// <summary>
+        /// Encode bytes
+        /// </summary>
+        /// <param name="data">Input data</param>
+        /// <param name="alphabet">Alphabet to use</param>
+        /// <returns>Encoded string</returns>
         public string Encode(byte[] data, Base58Alphabet alphabet)
         {
             return (alphabet == Base58Alphabet.Bitcoin ? 'z' : 'Z') +

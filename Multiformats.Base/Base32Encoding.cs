@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using SimpleBase;
-using WallF.BaseNEncodings;
 
 namespace Multiformats.Base
 {
@@ -14,6 +13,15 @@ namespace Multiformats.Base
 
         public override string Encode(byte[] data) => Encode(data, false);
 
+        /// <summary>
+        /// Encode bytes to Base32
+        /// </summary>
+        /// <param name="data">Input data</param>
+        /// <param name="padding">Use padding</param>
+        /// <param name="uppercase">Uppercase (default true)</param>
+        /// <param name="hex">Extended Base32 hex</param>
+        /// <param name="zbase">Z-Base32</param>
+        /// <returns>Encoded string</returns>
         public string Encode(byte[] data, bool padding, bool uppercase = true, bool hex = false, bool zbase = false)
         {
             if (zbase)

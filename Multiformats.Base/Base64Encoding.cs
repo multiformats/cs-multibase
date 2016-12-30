@@ -10,6 +10,13 @@ namespace Multiformats.Base
 
         public override string Encode(byte[] data) => Encode(data, false);
 
+        /// <summary>
+        /// Encode data
+        /// </summary>
+        /// <param name="data">Input data</param>
+        /// <param name="padding">Use padding</param>
+        /// <param name="url">Url safe?</param>
+        /// <returns>Encoded string</returns>
         public string Encode(byte[] data, bool padding, bool url = false)
         {
             var id = url ? padding ? 'U' : 'u' : padding ? 'M' : 'm';
