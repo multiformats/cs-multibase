@@ -6,7 +6,7 @@ branches:
 install:
   - nuget restore Multiformats.Base/packages.config -PackagesDirectory ../packages
   - nuget restore Multiformats.Base.Tests/packages.config -PackagesDirectory ../packages
-  - nuget install NUnit.Runners -Version 3.4.1 -OutputDirectory testrunner
+  - nuget install NUnit.Console -Version 3.5.0 -OutputDirectory testrunner
 script:
-  - xbuild /p:Configuration=Release /t:Multiformats.Base:rebuild;Multiformats.Base.Tests:rebuild Multiformats.Base.sln
-  - mono ./testrunner/NUnit.ConsoleRunner.3.4.1/tools/nunit3-console.exe ./Multiformats.Base.Tests/bin/Release/Multiformats.Base.Tests.dll
+  - xbuild /p:Configuration=Release /t:Multiformats.Base;Multiformats.Base.Tests Multiformats.Base.sln
+  - mono ./testrunner/NUnit.Console.3.5.0/tools/nunit3-console.exe ./Multiformats.Base.Tests/bin/Release/Multiformats.Base.Tests.dll
