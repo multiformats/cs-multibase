@@ -22,7 +22,7 @@ deploy:
   on:
     branch: master
 after_test:
-  - .\packages\OpenCover.4.6.166\tools\OpenCover.Console.exe -register:user -target:".\packages\NUnit.ConsoleRunner.3.5.0\tools\nunit3-console.exe" -targetargs:".\Multiformats.Base\bin\Release\Multiformats.Base.dll" -filter:"-[*]* +[Multiformats.Base]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\coverage.xml 
+  - .\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:".\packages\NUnit.ConsoleRunner.3.5.0\tools\nunit3-console.exe" -targetargs:".\Multiformats.Base\bin\Release\Multiformats.Base.dll" -filter:"-[*]* +[Multiformats.Base]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\coverage.xml 
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
   - pip install codecov
   - codecov -f ".\coverage.xml"
