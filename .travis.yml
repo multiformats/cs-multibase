@@ -4,8 +4,8 @@ branches:
   only:
     - master
 install:
-  - nuget restore Multiformats.Base/packages.config -PackagesDirectory ../packages
-  - nuget restore Multiformats.Base.Tests/packages.config -PackagesDirectory ../packages
+  - nuget restore Multiformats.Base/packages.config -PackagesDirectory ./packages
+  - nuget restore Multiformats.Base.Tests/packages.config -PackagesDirectory ./packages
 script:
   - xbuild /p:Configuration=Release Multiformats.Base.sln
-  - mono ../packages/NUnit.Console.3.5.0/tools/nunit3-console.exe ./Multiformats.Base.Tests/bin/Release/Multiformats.Base.Tests.dll
+  - mono ./packages/NUnit.Console.3.5.0/tools/nunit3-console.exe ./Multiformats.Base.Tests/bin/Release/Multiformats.Base.Tests.dll
