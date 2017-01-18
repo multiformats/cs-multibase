@@ -3,23 +3,23 @@ configuration: Release
 platform: x64
 init:
   - git config --global core.autocrlf input
-assembly_info:
-  patch: true
-  file: '**\AssemblyInfo.*'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
+#assembly_info:
+#  patch: true
+#  file: '**\AssemblyInfo.*'
+#  assembly_version: '{version}'
+#  assembly_file_version: '{version}'
+#  assembly_informational_version: '{version}'
 install:
   - git submodule update --init --recursive
 before_build:
   - dotnet restore
 build_script:
-  - dotnet build "src\Multiformats.Base" -c %CONFIGURATION%
+  - dotnet build "src\Multiformats.Base" -c %CONFIGURATION% --version-suffix %APPVEYOR_BUILD_NUMBER%
 after_build:
-  - dotnet pack "src\Multiformats.Base" -c %CONFIGURATION% --no-build -o artifacts
+  - dotnet pack "src\Multiformats.Base" -c %CONFIGURATION% --no-build --version-suffix %APPVEYOR_BUILD_NUMBER% -o artifacts
 test: off
 before_test:
-  - nuget install OpenCover.4.6.519
+  - nuget install OpenCover -Version .4.6.519
 test_script:
   - .\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -returntargetcode -target:"dotnet" -targetargs:"test test\Multiformats.Tests -c %CONFIGURATION%" -filter:"+[Multiformats.Base]* -[Multiformats.Base.Benchmarks]* -[Multiformats.Base.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\coverage.xml
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
