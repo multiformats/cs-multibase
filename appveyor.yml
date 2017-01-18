@@ -1,13 +1,13 @@
 environment:
   PKG_VERSION: 1.1.0
-version: ${PKG_VERSION}-{build}
+version: ${build}
 configuration: Release
 platform: x64
 
 skip_commits:
   message: /travis/
   files:
-    - '**/*.md'
+    - '**\*.md'
     - LICENSE
 
 skip_branch_with_pr: true
@@ -21,11 +21,13 @@ init:
   - ps: |
       if ($env:APPVEYOR_REPO_BRANCH -eq "master") 
       {
-          $env:NUGET_VERSION = "$env:PKG_VERSION"
+        $env:VERSION_SUFFIX = ""
+        $env:NUGET_VERSION = "$env:PKG_VERSION"
       }
       else
       {
-          $env:NUGET_VERSION = "$env:PKG_VERSION-beta$env:APPVEYOR_BUILD_NUMBER"
+        $env:VERSION_SUFFIX = "beta$env:APPVEYOR_BUILD_NUMBER"
+        $env:NUGET_VERSION = "$env:PKG_VERSION-$env:VERSION_SUFFIX"
       }
   - ps: Update-AppveyorBuild -Version $env:BUILD_VERSION
 
@@ -36,10 +38,10 @@ before_build:
   - appveyor-retry dotnet restore -v Minimal
 
 build_script:
-  - dotnet build "src\Multiformats.Base" -c %CONFIGURATION% --version-suffix %APPVEYOR_BUILD_NUMBER%
+  - dotnet build "src\Multiformats.Base" -c %CONFIGURATION% --version-suffix %VERSION_SUFFIX%
 
 after_build:
-  - dotnet pack "src\Multiformats.Base" -c %CONFIGURATION% --no-build --version-suffix %APPVEYOR_BUILD_NUMBER% -o artifacts
+  - dotnet pack "src\Multiformats.Base" -c %CONFIGURATION% --no-build --version-suffix %VERSION_SUFFIX% -o artifacts
 
 test: off
 
@@ -52,7 +54,7 @@ test_script:
 after_test:
   - ps: |
         $wc = New-Object 'System.Net.WebClient'
-        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit3/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestResults.xml))
+        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit3/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestResult.xml))
 
 on_success:
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
