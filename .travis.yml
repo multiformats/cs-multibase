@@ -2,15 +2,19 @@ language: csharp
 notifications:
   email: false
 
+install:
+  - git config --global core.autocrlf input
+  - git submodule update --init --recursive
+
 matrix:
   include:
     - dotnet: 1.0.0-preview2-1-003177
       mono: none
       env: DOTNETCORE=1
       install:
-        - dotnet restore
+        - dotnet restore -v Minimal
       script:
-        - dotnet build -r ubuntu.16.04-x64
+        - dotnet build -r ubuntu.16.04-x64 -c Release src/Multiformats.Base
         - dotnet test test/Multiformats.Base.Tests
     - mono: latest
 
@@ -21,3 +25,4 @@ branches:
 cache:
   - directories:
     - ./packages
+    - ./lib
