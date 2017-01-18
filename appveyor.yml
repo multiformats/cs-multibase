@@ -19,14 +19,14 @@ test: off
 before_test:
   - nuget install OpenCover.4.6.519
 test_script:
-  - .\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"dotnet" -targetargs:"test test\Multiformats.Tests -c %CONFIGURATION%" -filter:"+[Multiformats.Base]* -[Multiformats.Base.Benchmarks]* -[Multiformats.Base.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\coverage.xml
+  - .\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -returntargetcode -target:"dotnet" -targetargs:"test test\Multiformats.Tests -c %CONFIGURATION%" -filter:"+[Multiformats.Base]* -[Multiformats.Base.Benchmarks]* -[Multiformats.Base.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\coverage.xml
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
   - pip install codecov
   - codecov -f ".\coverage.xml"
 artifacts:
   - path: artifacts\**\*.*
 cache:
-  - %USERPROFILE%\.nuget\packages
+  - '%USERPROFILE%\.nuget\packages'
   - .\packages
 deploy:
   - provider: NuGet
