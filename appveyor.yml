@@ -23,7 +23,7 @@ test: off
 before_test:
   - nuget install OpenCover -Version 4.6.519 -OutputDirectory .\tools
 test_script:
-  - .\tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -returntargetcode -target:"%ProgramFiles%\dotnet\dotnet.exe" -targetargs:"test -r win-64 -f net461 %APPVEYOR_BUILD_FOLDER%\test\Multiformats.Base.Tests -c %CONFIGURATION%" -filter:"+[Multiformats.Base]* -[Multiformats.Base.Benchmarks]* -[Multiformats.Base.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:"%APPVEYOR_BUILD_FOLDER%\coverage.xml" -oldStyle
+  - .\tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -returntargetcode -target:"%ProgramFiles%\dotnet\dotnet.exe" -targetargs:"test -r win-64 -f netcoreapp1.1 %APPVEYOR_BUILD_FOLDER%\test\Multiformats.Base.Tests -c %CONFIGURATION%" -filter:"+[Multiformats.Base]* -[Multiformats.Base.Benchmarks]* -[Multiformats.Base.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:"%APPVEYOR_BUILD_FOLDER%\coverage.xml" -oldStyle
 on_success:
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
   - pip install codecov
