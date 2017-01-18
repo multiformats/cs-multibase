@@ -38,7 +38,7 @@ matrix:
     #  mono: latest
 
 script:
-  - if [ -n "${DOTNETCORE}" && -n "${OSX}" ]; then dotnet restore && dotnet build -r osx-x64 -f netstandard1.6 -c Release src/Multiformats.Base && dotnet test -r osx-x64 -f netstandard1.6 test/Multiformats.Base.Tests; fi
-  - if [ -n "${DOTNETCORE}" && -n "${LINUX}" ]; then dotnet restore && dotnet build -r linux-x64 -f netstandard1.6 -c Release src/Multiformats.Base && dotnet test -r linux-x64 -f netstandard1.6 test/Multiformats.Base.Tests; fi
+  - if [ -n "${DOTNETCORE}" && -n "${OSX}" ]; then dotnet restore && dotnet build -r osx-x64 -f netstandard1.6 -c Release src/Multiformats.Base && dotnet test -r osx-x64 -f netcoreapp1.1 test/Multiformats.Base.Tests; fi
+  - if [ -n "${DOTNETCORE}" && -n "${LINUX}" ]; then dotnet restore && dotnet build -r linux-x64 -f netstandard1.6 -c Release src/Multiformats.Base && dotnet test -r linux-x64 -f netcoreapp1.1 test/Multiformats.Base.Tests; fi
   #- if [ -z "${DOTNETCORE}" ]; then xbuild /p:Configuration=Release travis-mono-test.sln; fi
   #- if [ -z "${DOTNETCORE}" ]; then mono travis-mono-test/bin/Release/travis-mono-test.exe; fi
