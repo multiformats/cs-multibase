@@ -1,0 +1,42 @@
+{
+    "name": "Multiformats.Base.Tests",
+    "version": "1.0.0-*",
+    "testRunner": "nunit",
+    "dependencies": {
+        "NUnit": "3.6.0",
+        "dotnet-test-nunit": "3.4.0-beta-3",
+        "Multiformats.Base": {
+            "target": "project"
+        }
+    },
+    "frameworks": {
+        "net461": {
+            "dependencies": {
+                "Microsoft.NETCore.Platforms": "1.1.0"
+            }
+        },
+        "netcoreapp1.1": {
+            "dependencies": {
+                "Microsoft.NETCore.App": {
+                    "version": "1.1.0",
+                    "type": "platform"
+                }
+            }
+        }
+    },
+    "buildOptions": {
+        "allowUnsafe": true,
+        "optimize": true,
+        "debugType": "portable",
+        "platform": "x64",
+        "copyToOutput": "dotnet-test-nunit"
+    },
+    "runtimes": {
+        "win7-x64": {},
+        "win8-x64": {},
+        "win81-x64": {},
+        "win10-x64": {},
+        "osx.10.11-x64": {},
+        "ubuntu.16.04-x64": {}
+    }
+}

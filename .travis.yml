@@ -1,11 +1,23 @@
 language: csharp
-solution: Multiformats.Base.sln
+notifications:
+  email: false
+
+matrix:
+  include:
+    - dotnet: 1.0.0-preview2-1-003177
+      mono: none
+      env: DOTNETCORE=1
+      install:
+        - dotnet restore
+      script:
+        - dotnet build
+        - dotnet test test/Multiformats.Base.Tests
+    - mono: latest
+
 branches:
   only:
     - master
-install:
-  - nuget restore Multiformats.Base/packages.config -PackagesDirectory ./packages
-  - nuget restore Multiformats.Base.Tests/packages.config -PackagesDirectory ./packages
-script:
-  - xbuild /p:Configuration=Release Multiformats.Base.sln
-  - mono ./packages/NUnit.ConsoleRunner.3.5.0/tools/nunit3-console.exe ./Multiformats.Base.Tests/bin/Release/Multiformats.Base.Tests.dll
+
+cache:
+  - directories:
+    - ./packages

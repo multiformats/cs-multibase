@@ -1,0 +1,66 @@
+{
+    "name": "Multiformats.Base",
+    "version": "1.1.1",
+    "description": "Multiformat base encodings",
+    "copyright": "Copyright © tabrath 2016",
+    "title": "Multiformats.Base",
+    "authors": ["tabrath"],
+    "packOptions": {
+        "repository": {
+            "type": "git",
+            "url": "https://github.com/multiformats/cs-multibase"
+        },
+        "tags": [
+            "multiformats multibase base2 base8 base10 base16 base32 base58 base64 z-base32"
+        ],
+        "owners": [
+            "tabrath"
+        ],
+        "licenseUrl": "https://github.com/multiformats/cs-multibase/blob/master/LICENSE",
+        "iconUrl": "https://cdn.rawgit.com/multiformats/website/116894f6/favicon.png",
+        "summary": "Prefixes data with an identifier to know what encoding is used"
+    },
+    "dependencies": {
+    },
+    "frameworks": {
+        "netcoreapp1.1": {
+            "dependencies": {
+                "NETStandard.Library": "1.6.1",
+                "System.Runtime.Numerics": "4.3.0"
+            }
+        },
+        "net461": {
+            "dependencies": {
+                "System.Runtime.Numerics": "4.3.0"
+            },
+            "frameworkAssemblies": {
+                "System.Numerics": "4.0.0"
+            }
+        },
+        "netstandard1.6": {
+            "dependencies": {
+                "NETStandard.Library": "1.6.1",
+                "System.Runtime.Numerics": "4.3.0"
+            }
+        }
+    },
+    "buildOptions": {
+        "allowUnsafe": true,
+        "optimize": true,
+        "compile": {
+            "include": [
+                "../../lib/SimpleBase/src/*.cs",
+                "../../lib/BaseNEncodings.Net/BaseNEncodings/**/*.cs"
+            ],
+            "exclude": "../../lib/**/AssemblyInfo.cs"
+        }
+    },
+    "runtimes": {
+        "win7-x64": {},
+        "win8-x64": {},
+        "win81-x64": {},
+        "win10-x64": {},
+        "osx.10.11-x64": {},
+        "ubuntu.16.04-x64": {}
+    }
+}
