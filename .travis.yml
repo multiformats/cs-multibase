@@ -25,4 +25,3 @@ branches:
 cache:
   - directories:
     - ./packages
-    - ./lib

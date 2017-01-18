@@ -32,7 +32,6 @@ cache:
   - '.\packages'
   - '.\tools'
   - '\Python34'
-  - '.\lib'
 deploy:
   - provider: NuGet
     api_key:
