@@ -17,7 +17,7 @@ matrix:
 
 init:
   - git config --global core.autocrlf input
-  - ps: $env:BUILD_VERSION = "$env:PKG_VERSION.$env:APPVEYOR_BUILD_NUMBER"
+  - ps: $env:BUILD_VERSION = "$env:PKG_VERSION-$env:APPVEYOR_BUILD_NUMBER"
   - ps: |
       if ($env:APPVEYOR_REPO_BRANCH -eq "master") 
       {
@@ -52,7 +52,7 @@ test_script:
 after_test:
   - ps: |
         $wc = New-Object 'System.Net.WebClient'
-        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit3/$($env:APPVEYOR_JOB_ID)", (Resolve-Path (.\TestResults.xml)))
+        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit3/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestResults.xml))
 
 on_success:
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
