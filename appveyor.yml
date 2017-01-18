@@ -65,10 +65,10 @@ artifacts:
 
 cache:
   - '%USERPROFILE%\.local'
-  - '%USERPROFILE%\.nuget\packages'
+  - '%USERPROFILE%\.nuget\packages -> **\project.json'
   - '%LocalAppData%\NuGet\Cache'
   - '%LocalAppData%\Python'
-  - '.\packages' -> '.\**\*.json'
+  - '.\packages -> **\project.json'
   - '.\tools'
   - '\Python34'
 
