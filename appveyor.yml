@@ -1,4 +1,4 @@
-version: 1.1.0.{build}
+version: 1.1.0-{build}
 configuration: Release
 platform: x64
 init:
@@ -6,7 +6,7 @@ init:
 install:
   - git submodule update --init --recursive
 before_build:
-  - dotnet restore
+  - appveyor-retry dotnet restore -v Minimal
 build_script:
   - dotnet build "src\Multiformats.Base" -c %CONFIGURATION% --version-suffix %APPVEYOR_BUILD_NUMBER%
 after_build:
@@ -15,7 +15,8 @@ test: off
 before_test:
   - nuget install OpenCover -Version 4.6.519 -OutputDirectory .\tools
 test_script:
-  - .\tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -returntargetcode -target:"%ProgramFiles%\dotnet\bin\dotnet.exe" -targetargs:"test test\Multiformats.Tests -c %CONFIGURATION%" -filter:"+[Multiformats.Base]* -[Multiformats.Base.Benchmarks]* -[Multiformats.Base.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\coverage.xml
+  - echo %PATH%
+  - .\tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -returntargetcode -target:"%ProgramFiles%\dotnet\dotnet.exe" -targetargs:"test test\Multiformats.Tests -c %CONFIGURATION%" -filter:"+[Multiformats.Base]* -[Multiformats.Base.Benchmarks]* -[Multiformats.Base.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\coverage.xml
 on_success:
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
   - pip install codecov
