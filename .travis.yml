@@ -1,22 +1,9 @@
 language: csharp
+
 notifications:
-  email: false
-
-install:
-  - git config --global core.autocrlf input
-  - git submodule update --init --recursive
-
-matrix:
-  include:
-    - dotnet: 1.0.0-preview2-003131
-      mono: none
-      env: DOTNETCORE=1
-      install:
-        - dotnet restore -v Minimal
-      script:
-        - dotnet build -r ubuntu.16.04-x64 -c Release src/Multiformats.Base
-        - dotnet test test/Multiformats.Base.Tests
-    - mono: latest
+  email:
+    on_success: change
+    on_failure: always
 
 branches:
   only:
@@ -25,3 +12,32 @@ branches:
 cache:
   - directories:
     - ./packages
+
+install:
+  - git config --global core.autocrlf input
+  - git submodule update --init --recursive
+
+matrix:
+  fast_finish: true
+  include:
+    - os: osx
+      osx_image: xcode7.3
+      dotnet: 1.0.0-preview2-003131
+      mono: none
+      env: DOTNETCORE=1
+    - os: linux
+      dist: trusty
+      sudo: required
+      dotnet: 1.0.0-preview2-003131
+      mono: none
+      env: DOTNETCORE=1
+    #- os: linux
+    #  mono: latest
+    #  sudo: false
+    #- os: osx
+    #  mono: latest
+
+script:
+  - if [ -n "${DOTNETCORE}" ]; then dotnet restore && dotnet build -c Release src/Multiformats.Base && dotnet test test/Multiformats.Base.Tests; fi
+  #- if [ -z "${DOTNETCORE}" ]; then xbuild /p:Configuration=Release travis-mono-test.sln; fi
+  #- if [ -z "${DOTNETCORE}" ]; then mono travis-mono-test/bin/Release/travis-mono-test.exe; fi
