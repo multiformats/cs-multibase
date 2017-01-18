@@ -1,6 +1,6 @@
 {
     "name": "Multiformats.Base",
-    "version": "1.1.*",
+    "version": "1.1.0-*",
     "description": "Multiformat base encodings",
     "copyright": "Copyright © tabrath 2016",
     "title": "Multiformats.Base",

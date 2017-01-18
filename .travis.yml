@@ -10,7 +10,7 @@ matrix:
       install:
         - dotnet restore
       script:
-        - dotnet build
+        - dotnet build -r ubuntu.16.04-x64
         - dotnet test test/Multiformats.Base.Tests
     - mono: latest
 
