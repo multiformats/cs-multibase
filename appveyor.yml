@@ -68,7 +68,7 @@ cache:
   - '%USERPROFILE%\.nuget\packages'
   - '%LocalAppData%\NuGet\Cache'
   - '%LocalAppData%\Python'
-  - '.\packages' -> .\**\*.json
+  - '.\packages' -> '.\**\*.json'
   - '.\tools'
   - '\Python34'
 
