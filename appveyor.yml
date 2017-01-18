@@ -19,7 +19,7 @@ after_build:
   - dotnet pack "src\Multiformats.Base" -c %CONFIGURATION% --no-build --version-suffix %APPVEYOR_BUILD_NUMBER% -o artifacts
 test: off
 before_test:
-  - nuget install OpenCover -Version .4.6.519
+  - nuget install OpenCover -Version 4.6.519
 test_script:
   - .\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -returntargetcode -target:"dotnet" -targetargs:"test test\Multiformats.Tests -c %CONFIGURATION%" -filter:"+[Multiformats.Base]* -[Multiformats.Base.Benchmarks]* -[Multiformats.Base.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\coverage.xml
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
