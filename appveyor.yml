@@ -9,6 +9,8 @@ assembly_info:
   assembly_version: '{version}'
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
+install:
+  - git submodule update --init --recursive
 before_build:
   - dotnet restore
 build_script:
