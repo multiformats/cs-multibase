@@ -1,5 +1,6 @@
 environment:
   PKG_VERSION: 1.1.0
+  VERSION_SUFFIX: ""
 version: ${build}
 configuration: Release
 platform: x64
@@ -38,10 +39,26 @@ before_build:
   - appveyor-retry dotnet restore -v Minimal
 
 build_script:
-  - dotnet build "src\Multiformats.Base" -c %CONFIGURATION% --version-suffix %VERSION_SUFFIX%
+  - ps: |
+    if ($env:APPVEYOR_REPO_BRANCH -eq "master")
+    {
+      dotnet build "src\Multiformats.Base" -c %CONFIGURATION%
+    }
+    else
+    {
+      dotnet build "src\Multiformats.Base" -c %CONFIGURATION% --version-suffix %VERSION_SUFFIX%
+    }
 
 after_build:
-  - dotnet pack "src\Multiformats.Base" -c %CONFIGURATION% --no-build --version-suffix %VERSION_SUFFIX% -o artifacts
+  - ps: |
+    if ($env:APPVEYOR_REPO_BRANCH -eq "master")
+    {
+      dotnet pack "src\Multiformats.Base" -c %CONFIGURATION% --no-build -o artifacts
+    }
+    else
+    {
+      dotnet pack "src\Multiformats.Base" -c %CONFIGURATION% --no-build --version-suffix %VERSION_SUFFIX% -o artifacts
+    }
 
 test: off
 
