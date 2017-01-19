@@ -34,7 +34,7 @@
                 "System.Runtime.Numerics": "4.3.0"
             },
             "frameworkAssemblies": {
-                "System.Numerics": "4.0.0"
+                "System.Numerics": "4.3.0"
             }
         },
         "netstandard1.6": {

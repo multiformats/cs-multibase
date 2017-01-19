@@ -12,13 +12,13 @@
     "frameworks": {
         "net461": {
             "dependencies": {
-                "Microsoft.NETCore.Platforms": "1.0.0"
+                "Microsoft.NETCore.Platforms": "1.0.1"
             }
         },
         "netcoreapp1.0": {
             "dependencies": {
                 "Microsoft.NETCore.App": {
-                    "version": "1.0.0",
+                    "version": "1.0.1",
                     "type": "platform"
                 }
             }
