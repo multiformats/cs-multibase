@@ -31,7 +31,7 @@ init:
         $env:NUGET_VERSION = "$env:PKG_VERSION-$env:VERSION_SUFFIX"
       }
   - ps: Update-AppveyorBuild -Version $env:BUILD_VERSION
-  - echo Build version %BUILD_VERSION%, NuGet version %NUGET_VERSION%, Version suffix %VERSION_SUFFIX%
+  - echo Build version $(BUILD_VERSION), NuGet version $(NUGET_VERSION), Version suffix $(VERSION_SUFFIX)
 
 install:
   - git submodule update --init --recursive
@@ -43,22 +43,22 @@ build_script:
   - ps: |
       if ($env:APPVEYOR_REPO_BRANCH -eq "master")
       {
-        dotnet build "src\Multiformats.Base" -c %CONFIGURATION%
+        dotnet build "src\Multiformats.Base" -c $(CONFIGURATION)
       }
       else
       {
-        dotnet build "src\Multiformats.Base" -c %CONFIGURATION% --version-suffix %VERSION_SUFFIX%
+        dotnet build "src\Multiformats.Base" -c $(CONFIGURATION) --version-suffix $(VERSION_SUFFIX)
       }
 
 after_build:
   - ps: |
       if ($env:APPVEYOR_REPO_BRANCH -eq "master")
       {
-        dotnet pack "src\Multiformats.Base" -c %CONFIGURATION% --no-build -o artifacts
+        dotnet pack "src\Multiformats.Base" -c $(CONFIGURATION) --no-build -o artifacts
       }
       else
       {
-        dotnet pack "src\Multiformats.Base" -c %CONFIGURATION% --no-build --version-suffix %VERSION_SUFFIX% -o artifacts
+        dotnet pack "src\Multiformats.Base" -c $(CONFIGURATION) --no-build --version-suffix $(VERSION_SUFFIX) -o artifacts
       }
 
 test: off
