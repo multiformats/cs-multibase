@@ -31,7 +31,7 @@ init:
         $env:NUGET_VERSION = "$env:PKG_VERSION-$env:VERSION_SUFFIX"
       }
   - ps: Update-AppveyorBuild -Version $env:BUILD_VERSION
-  - echo Build version $(BUILD_VERSION), NuGet version $(NUGET_VERSION), Version suffix $(VERSION_SUFFIX)
+  - ps: Write-Host "Build version $env:BUILD_VERSION, NuGet version $env:NUGET_VERSION, Version suffix $env:VERSION_SUFFIX"
 
 install:
   - git submodule update --init --recursive
@@ -43,22 +43,22 @@ build_script:
   - ps: |
       if ($env:APPVEYOR_REPO_BRANCH -eq "master")
       {
-        dotnet build "src\Multiformats.Base" -c $(CONFIGURATION)
+        dotnet build "src\Multiformats.Base" -c $env:CONFIGURATION
       }
       else
       {
-        dotnet build "src\Multiformats.Base" -c $(CONFIGURATION) --version-suffix $(VERSION_SUFFIX)
+        dotnet build "src\Multiformats.Base" -c $env:CONFIGURATION --version-suffix $env:VERSION_SUFFIX
       }
 
 after_build:
   - ps: |
       if ($env:APPVEYOR_REPO_BRANCH -eq "master")
       {
-        dotnet pack "src\Multiformats.Base" -c $(CONFIGURATION) --no-build -o artifacts
+        dotnet pack "src\Multiformats.Base" -c $env:CONFIGURATION --no-build -o artifacts
       }
       else
       {
-        dotnet pack "src\Multiformats.Base" -c $(CONFIGURATION) --no-build --version-suffix $(VERSION_SUFFIX) -o artifacts
+        dotnet pack "src\Multiformats.Base" -c $env:CONFIGURATION --no-build --version-suffix $env:VERSION_SUFFIX -o artifacts
       }
 
 test: off
@@ -78,7 +78,7 @@ on_success:
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
   - pip install codecov
   - codecov -f "%APPVEYOR_BUILD_FOLDER%\coverage.xml" -X gcov
-  - appveyor PushArtifact "%APPVEYOR_BUILD_FOLDER%\artifacts\Multiformats.Base.%NUGET_VERSION%.nupkg"
+  - ps: appveyor PushArtifact "$env:APPVEYOR_BUILD_FOLDER\artifacts\Multiformats.Base.$env:NUGET_VERSION.nupkg"
 
 artifacts:
   - path: artifacts\**\*.*
