@@ -30,16 +30,19 @@
             }
         },
         "net461": {
+            "imports": [
+                "dotnet5.6",
+                "portable-net45+win8"
+            ],
             "dependencies": {
-                "System.Runtime.Numerics": "4.3.0"
+                "System.Runtime.Numerics": "4.0.0"
             },
             "frameworkAssemblies": {
-                "System.Numerics": "4.3.0"
+                "System.Numerics": "4.0.0"
             }
         },
         "netstandard1.6": {
             "dependencies": {
-                "NETStandard.Library": "1.6.1",
                 "System.Runtime.Numerics": "4.3.0"
             }
         }
