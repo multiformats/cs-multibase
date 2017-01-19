@@ -40,25 +40,25 @@ before_build:
 
 build_script:
   - ps: |
-    if ($env:APPVEYOR_REPO_BRANCH -eq "master")
-    {
-      dotnet build "src\Multiformats.Base" -c %CONFIGURATION%
-    }
-    else
-    {
-      dotnet build "src\Multiformats.Base" -c %CONFIGURATION% --version-suffix %VERSION_SUFFIX%
-    }
+      if ($env:APPVEYOR_REPO_BRANCH -eq "master")
+      {
+        dotnet build "src\Multiformats.Base" -c %CONFIGURATION%
+      }
+      else
+      {
+        dotnet build "src\Multiformats.Base" -c %CONFIGURATION% --version-suffix %VERSION_SUFFIX%
+      }
 
 after_build:
   - ps: |
-    if ($env:APPVEYOR_REPO_BRANCH -eq "master")
-    {
-      dotnet pack "src\Multiformats.Base" -c %CONFIGURATION% --no-build -o artifacts
-    }
-    else
-    {
-      dotnet pack "src\Multiformats.Base" -c %CONFIGURATION% --no-build --version-suffix %VERSION_SUFFIX% -o artifacts
-    }
+      if ($env:APPVEYOR_REPO_BRANCH -eq "master")
+      {
+        dotnet pack "src\Multiformats.Base" -c %CONFIGURATION% --no-build -o artifacts
+      }
+      else
+      {
+        dotnet pack "src\Multiformats.Base" -c %CONFIGURATION% --no-build --version-suffix %VERSION_SUFFIX% -o artifacts
+      }
 
 test: off
 
