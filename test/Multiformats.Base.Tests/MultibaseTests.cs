@@ -140,5 +140,101 @@ namespace Multiformats.Base.Tests
             Assert.Equal(decoded, bytes);
             Assert.Equal(Encoding.UTF8.GetString(decoded), "hello world");
         }
+
+        [Fact]
+        public void TestBase16Mismatch_Lower()
+        {
+            var bytes = Encoding.UTF8.GetBytes("hello world");
+            var encoded = Multibase.Base16.Encode(bytes, false).ToCharArray();
+            encoded[0] = char.ToUpper(encoded[0]);
+
+            Assert.Throws<Exception>(() => Multibase.Base16.Decode(new string(encoded)));
+        }
+
+        [Fact]
+        public void TestBase16Mismatch_Upper()
+        {
+            var bytes = Encoding.UTF8.GetBytes("hello world");
+            var encoded = Multibase.Base16.Encode(bytes, true).ToCharArray();
+            encoded[0] = char.ToLower(encoded[0]);
+
+            Assert.Throws<Exception>(() => Multibase.Base16.Decode(new string(encoded)));
+        }
+
+        [Fact]
+        public void TestBase32Mismatch_Lower()
+        {
+            var bytes = Encoding.UTF8.GetBytes("hello world");
+            var encoded = Multibase.Base32.Encode(bytes, true, false).ToCharArray();
+            encoded[0] = char.ToUpper(encoded[0]);
+
+            Assert.Throws<Exception>(() => Multibase.Base32.Decode(new string(encoded)));
+        }
+
+        [Fact]
+        public void TestBase32Mismatch_Upper()
+        {
+            var bytes = Encoding.UTF8.GetBytes("hello world");
+            var encoded = Multibase.Base32.Encode(bytes, true, true).ToCharArray();
+            encoded[0] = char.ToLower(encoded[0]);
+
+            Assert.Throws<Exception>(() => Multibase.Base32.Decode(new string(encoded)));
+        }
+
+        [Theory]
+        [InlineData(typeof(Base32Encoding), "xhello world")]
+        [InlineData(typeof(Base58Encoding), "xhello world")]
+        [InlineData(typeof(Base64Encoding), "xhello world")]
+        public void TestBases_NotSupportedIdentifiers(Type type, string invalid)
+        {
+            var encoder = (MultibaseEncoding)Activator.CreateInstance(type);
+
+            Assert.Throws<NotSupportedException>(() => encoder.Decode(invalid));
+        }
+
+        [Fact]
+        public void Encode_GivenUnsupportedEncoding_Throws()
+        {
+            Assert.Throws<NotSupportedException>(() => Multibase.Encode<TestEncoding>(Encoding.UTF8.GetBytes("hello world")));
+        }
+
+        private class TestEncoding : MultibaseEncoding
+        {
+            public override char[] Identifiers => throw new NotImplementedException();
+
+            public override byte[] Decode(string str)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override string Encode(byte[] data)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        [Fact]
+        public void Decode_GivenUnknownIdentifier_Throws()
+        {
+            Assert.Throws<NotSupportedException>(() => Multibase.Decode("xhello world"));
+        }
+
+        [Fact]
+        public void DecodeRaw_CanDecodeRawValue()
+        {
+            var rawEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes("hello world")).Replace("-", "");
+            var rawDecoded = Multibase.DecodeRaw(Multibase.Base64, rawEncoded);
+
+            Assert.Equal(rawDecoded, Encoding.UTF8.GetBytes("hello world"));
+        }
+
+        [Fact]
+        public void DecodeRawGeneric_CanDecodeRawValue()
+        {
+            var rawEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes("hello world")).Replace("-", "");
+            var rawDecoded = Multibase.DecodeRaw<Base64Encoding>(rawEncoded);
+
+            Assert.Equal(rawDecoded, Encoding.UTF8.GetBytes("hello world"));
+        }
     }
 }
