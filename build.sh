@@ -4,9 +4,9 @@ set -e
 
 if [ $TRAVIS_OS_NAME = "osx" ]; then
   ulimit -n 1024
-  dotnet restore --disable-parallel
+  dotnet restore --disable-parallel --runtime osx-x64
 else
-  dotnet restore
+  dotnet restore --runtime ubuntu-x64
 fi
 
 export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.5/

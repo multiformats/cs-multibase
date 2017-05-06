@@ -18,7 +18,6 @@ mono:
 os:
   - linux
   - osx
-osx_image: xcode7.1
 
 notifications:
   email:
@@ -30,8 +29,11 @@ branches:
     - master
 
 cache:
+  bundler: true
   directories:
   - ./packages
+  - /.dotnetcli
+  - $HOME/Library/Caches/Homebrew
 
 before_install:
   - if test "$TRAVIS_OS_NAME" == "osx"; then brew update; brew install openssl; ln -s /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib /usr/local/lib/; ln -s /usr/local/opt/openssl/lib/libssl.1.0.0.dylib /usr/local/lib/; fi

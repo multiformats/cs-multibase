@@ -37,7 +37,7 @@ install:
   - git submodule update --init --recursive
 
 before_build:
-  - appveyor-retry dotnet restore -v Minimal
+  - appveyor-retry dotnet restore -v Minimal --runtime win10-x64
 
 build_script:
   - ps: |
