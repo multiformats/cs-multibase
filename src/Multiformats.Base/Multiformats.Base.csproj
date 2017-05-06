@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Multiformat base encodings</Description>
+    <Copyright>Copyright © tabrath 2016</Copyright>
+    <AssemblyTitle>Multiformats.Base</AssemblyTitle>
+    <VersionPrefix>1.1.0</VersionPrefix>
+    <Authors>tabrath</Authors>
+    <TargetFrameworks>net461;netstandard1.6</TargetFrameworks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>Multiformats.Base</AssemblyName>
+    <PackageId>Multiformats.Base</PackageId>
+    <PackageTags>multiformats multibase base2 base8 base10 base16 base32 base58 base64 z-base32</PackageTags>
+    <PackageIconUrl>https://cdn.rawgit.com/multiformats/website/116894f6/favicon.png</PackageIconUrl>
+    <PackageLicenseUrl>https://github.com/multiformats/cs-multibase/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/multiformats/cs-multibase</RepositoryUrl>
+    <RuntimeIdentifiers>win-x64;osx-x64;linux-x64</RuntimeIdentifiers>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'net461' ">$(PackageTargetFallback);netstandard;portable-net461+win8</PackageTargetFallback>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="..\..\lib\**\AssemblyInfo.cs" />
+    <Compile Include="..\..\lib\SimpleBase\src\*.cs;..\..\lib\BaseNEncodings.Net\BaseNEncodings\**\*.cs" Exclude="..\..\lib\**\AssemblyInfo.cs;bin\**;obj\**;**\*.xproj;packages\**" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
+    <PackageReference Include="System.Runtime.Numerics" Version="4.0.1" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
+    <PackageReference Include="System.Runtime.Numerics" Version="4.3.0" />
+  </ItemGroup>
+
+</Project>
