@@ -1,14 +1,34 @@
 # Multiformats.Base
 
-[![Build Status](https://travis-ci.org/tabrath/cs-multibase.svg?branch=master)](https://travis-ci.org/tabrath/cs-multibase)
-[![Build status](https://ci.appveyor.com/api/projects/status/w93pidw0npmvn5g4?svg=true)](https://ci.appveyor.com/project/tabrath/cs-multibase)
-[![NuGet Badge](https://buildstats.info/nuget/Multiformats.Base)](https://www.nuget.org/packages/Multiformats.Base/)
-[![codecov](https://codecov.io/gh/tabrath/cs-multibase/branch/master/graph/badge.svg)](https://codecov.io/gh/tabrath/cs-multibase)
-[![Libraries.io for GitHub](https://img.shields.io/librariesio/github/tabrath/cs-multibase.svg?style=flat-square)](https://libraries.io/github/tabrath/cs-multibase)
+[![](https://img.shields.io/badge/project-multiformats-blue.svg?style=flat-square)](https://github.com/multiformats/multiformats)
+[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](https://webchat.freenode.net/?channels=%23ipfs)
+[![Travis CI](https://img.shields.io/travis/multiformats/cs-multibase.svg?style=flat-square&branch=master)](https://travis-ci.org/multiformats/cs-multibase)
+[![AppVeyor](https://img.shields.io/appveyor/ci/tabrath/cs-multihash/master.svg?style=flat-square)](https://ci.appveyor.com/project/tabrath/cs-multibase)
+[![NuGet](https://buildstats.info/nuget/Multiformats.Base)](https://www.nuget.org/packages/Multiformats.Base/)
+[![](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+[![Codecov](https://img.shields.io/codecov/c/github/multiformats/cs-multibase/master.svg?style=flat-square)](https://codecov.io/gh/multiformats/cs-multibase)
+[![Libraries.io](https://img.shields.io/librariesio/github/multiformats/cs-multibase.svg?style=flat-square)](https://libraries.io/github/multiformats/cs-multibase)
 
-C# implementation of [multiformats/multibase](https://github.com/multiformats/multibase). As stated in the specs, multibase encoded strings are prefixed with an identifier for the base it's encoded in. There's a lot of [discussion going](https://github.com/multiformats/multibase/issues) on about this spec, so consider this work in progress.
+> C# implementation of [multiformats/multibase](https://github.com/multiformats/multibase).
+
+As stated in the specs, multibase encoded strings are prefixed with an identifier for the base it's encoded in.
+There's a lot of [discussion going on](https://github.com/multiformats/multibase/issues) about this spec, so consider this work in progress.
 
 If you don't care about the multibase part, you can use the EncodeRaw/DecodeRaw methods to just encode/decode to bases without the prefix.
+
+## Table of Contents
+
+- [Install](#install)
+- [Usage](#usage)
+- [Supported base encodings](#supported-base-encodings)
+- [Maintainers](#maintainers)
+- [Contribute](#contribute)
+- [License](#license)
+- [Third parties](#third-parties)
+
+## Install
+
+  PM> Install-Package Multiformats.Base
 
 ## Usage
 ``` cs
@@ -56,3 +76,24 @@ Be aware that you can not pass in additional parameters to `Multibase.Decode` to
   * Default: bitcoin
 * Base64 (with and without padding, url-safe)
   * Default: no padding, not url-safe
+
+## Maintainers
+
+Captain: [@tabrath](https://github.com/tabrath).
+
+## Contribute
+
+Contributions welcome. Please check out [the issues](https://github.com/multiformats/cs-multibase/issues).
+
+Check out our [contributing document](https://github.com/multiformats/multiformats/blob/master/contributing.md) for more information on how we work, and about contributing in general. Please be aware that all interactions related to multiformats are subject to the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+
+Small note: If editing the README, please conform to the [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
+
+## License
+
+[MIT](LICENSE) © 2016 Trond Bråthen
+
+# Third parties
+
+[SimpleBase](https://github.com/ssg/SimpleBase) Apache 2.0
+[BaseNEncodings.Net](https://github.com/wujikui/BaseNEncodings.Net) Apache 2.0

@@ -1,0 +1,6 @@
+[submodule "lib/SimpleBase"]
+	path = lib/SimpleBase
+	url = https://github.com/ssg/SimpleBase.git
+[submodule "lib/BaseNEncodings.Net"]
+	path = lib/BaseNEncodings.Net
+	url = https://github.com/wujikui/BaseNEncodings.Net.git
