@@ -4,7 +4,7 @@
     <Description>Multiformat base encodings</Description>
     <Copyright>Copyright © tabrath 2016</Copyright>
     <AssemblyTitle>Multiformats.Base</AssemblyTitle>
-    <VersionPrefix>1.1.0</VersionPrefix>
+    <VersionPrefix>1.2.0</VersionPrefix>
     <Authors>tabrath</Authors>
     <TargetFrameworks>net461;netstandard1.6</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

@@ -20,7 +20,7 @@ init:
   - git config --global core.autocrlf input
   - ps: $env:BUILD_VERSION = "$env:PKG_VERSION-$env:APPVEYOR_BUILD_NUMBER"
   - ps: |
-      if ($env:APPVEYOR_REPO_BRANCH -eq "master" -And $env:APPVEYOR_PULL_REQUEST_NUMBER -eq "")
+      if ($env:APPVEYOR_REPO_BRANCH -eq "master")
       {
         $env:VERSION_SUFFIX = ""
         $env:NUGET_VERSION = "$env:PKG_VERSION"
@@ -41,7 +41,7 @@ before_build:
 
 build_script:
   - ps: |
-      if ($env:APPVEYOR_REPO_BRANCH -eq "master" -And $env:APPVEYOR_PULL_REQUEST_NUMBER -eq "")
+      if ($env:APPVEYOR_REPO_BRANCH -eq "master")
       {
         dotnet build "src\Multiformats.Base" -c $env:CONFIGURATION
       }
@@ -52,7 +52,7 @@ build_script:
 
 after_build:
   - ps: |
-      if ($env:APPVEYOR_REPO_BRANCH -eq "master" -And $env:APPVEYOR_PULL_REQUEST_NUMBER -eq "")
+      if ($env:APPVEYOR_REPO_BRANCH -eq "master")
       {
         dotnet pack "src\Multiformats.Base" -c $env:CONFIGURATION --no-build -o $env:APPVEYOR_BUILD_FOLDER\artifacts
       }
