@@ -67,7 +67,7 @@ before_test:
   - nuget install OpenCover -Version 4.6.519 -OutputDirectory .\tools
 
 test_script:
-  - .\tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -returntargetcode -target:"%ProgramFiles%\dotnet\dotnet.exe" -targetargs:"test %APPVEYOR_BUILD_FOLDER%\test\Multiformats.Base.Tests\Multiformats.Base.Tests.csproj -c Debug -f netcoreapp1.1 -l trx;logfilename=TestResult.xml" -filter:"+[Multiformats.Base]* -[Multiformats.Base.Benchmarks]* -[Multiformats.Base.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:"%APPVEYOR_BUILD_FOLDER%\coverage.xml" -oldStyle
+  - .\tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -returntargetcode -target:"%ProgramFiles%\dotnet\dotnet.exe" -targetargs:"test %APPVEYOR_BUILD_FOLDER%\test\Multiformats.Base.Tests\Multiformats.Base.Tests.csproj -c Debug -f netcoreapp1.1 -l trx;logfilename=TestResult.xml /p:Platform=AnyCPU" -filter:"+[Multiformats.Base]* -[Multiformats.Base.Benchmarks]* -[Multiformats.Base.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:"%APPVEYOR_BUILD_FOLDER%\coverage.xml" -oldStyle
 
 after_test:
   - ps: |
