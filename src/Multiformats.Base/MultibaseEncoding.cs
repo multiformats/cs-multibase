@@ -1,31 +1,27 @@
 namespace Multiformats.Base
 {
-    public abstract class MultibaseEncoding
+    public enum MultibaseEncoding
     {
-        /// <summary>
-        /// Identifying chars of this encoding
-        /// </summary>
-        public abstract char[] Identifiers { get; }
-
-        /// <summary>
-        /// The default identifier (defaults to the first of Identifiers)
-        /// </summary>
-        public virtual char DefaultIdentifier => Identifiers[0];
-
-        protected MultibaseEncoding() { }
-
-        /// <summary>
-        /// Encode bytes to Multibase encoded string
-        /// </summary>
-        /// <param name="data">Input data</param>
-        /// <returns>Multibase encoded string</returns>
-        public abstract string Encode(byte[] data);
-
-        /// <summary>
-        /// Decode a Multibase encoded string
-        /// </summary>
-        /// <param name="str">Input string</param>
-        /// <returns>Decoded bytes</returns>
-        public abstract byte[] Decode(string str);
+        Identity,
+        Base2,
+        Base8,
+        Base10,
+        Base16Lower,
+        Base16Upper,
+        Base32Lower,
+        Base32Upper,
+        Base32PaddedLower,
+        Base32PaddedUpper,
+        Base32Z,
+        Base32HexLower,
+        Base32HexUpper,
+        Base32HexPaddedLower,
+        Base32HexPaddedUpper,
+        Base58Btc,
+        Base58Flickr,
+        Base64,
+        Base64Padded,
+        Base64Url,
+        Base64UrlPadded
     }
 }

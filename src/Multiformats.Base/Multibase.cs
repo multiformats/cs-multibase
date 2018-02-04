@@ -1,101 +1,105 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Multiformats.Base
 {
-    public static class Multibase
+    public abstract class Multibase
     {
-        public static readonly Base2Encoding Base2 = new Base2Encoding();
-        public static readonly Base8Encoding Base8 = new Base8Encoding();
-        public static readonly Base10Encoding Base10 = new Base10Encoding();
-        public static readonly Base16Encoding Base16 = new Base16Encoding();
-        public static readonly Base32Encoding Base32 = new Base32Encoding();
-        public static readonly Base64Encoding Base64 = new Base64Encoding();
-        public static readonly Base58Encoding Base58 = new Base58Encoding();
+        protected static readonly Dictionary<MultibaseEncoding, Multibase> _bases;
 
-        private static readonly MultibaseEncoding[] _encodings =
+        static Multibase()
         {
-            Base2, Base8, Base10, Base16, Base32, Base58, Base64
-        };
-
-        /// <summary>
-        /// Encode byte array
-        /// </summary>
-        /// <returns>Multibase encoded string</returns>
-        public static string Encode<TEncoding>(byte[] data) where TEncoding : MultibaseEncoding
-        {
-            var encoding = _encodings.OfType<TEncoding>().SingleOrDefault();
-            if (encoding == null)
-                throw new NotSupportedException($"Encoding type is not supported: {typeof(TEncoding).Name}");
-
-            return encoding.Encode(data);
+            _bases = new Dictionary<MultibaseEncoding, Multibase>
+            {
+                {MultibaseEncoding.Identity, new Identity()},
+                {MultibaseEncoding.Base2, new Base2()},
+                {MultibaseEncoding.Base8, new Base8()},
+                {MultibaseEncoding.Base10, new Base10()},
+                {MultibaseEncoding.Base16Lower, new Base16Lower()},
+                {MultibaseEncoding.Base16Upper, new Base16Upper()},
+                {MultibaseEncoding.Base32Lower, new Base32Lower()},
+                {MultibaseEncoding.Base32Upper, new Base32Upper()},
+                {MultibaseEncoding.Base32PaddedLower, new Base32PaddedLower()},
+                {MultibaseEncoding.Base32PaddedUpper, new Base32PaddedUpper()},
+                {MultibaseEncoding.Base32HexLower, new Base32HexLower()},
+                {MultibaseEncoding.Base32HexUpper, new Base32HexUpper()},
+                {MultibaseEncoding.Base32HexPaddedLower, new Base32HexPaddedLower()},
+                {MultibaseEncoding.Base32HexPaddedUpper, new Base32HexPaddedUpper()},
+                {MultibaseEncoding.Base32Z, new Base32Z()},
+                {MultibaseEncoding.Base58Btc, new Base58Btc()},
+                {MultibaseEncoding.Base58Flickr, new Base58Flickr()},
+                {MultibaseEncoding.Base64, new Base64Normal()},
+                {MultibaseEncoding.Base64Padded, new Base64Padded()},
+                {MultibaseEncoding.Base64Url, new Base64Url()},
+                {MultibaseEncoding.Base64UrlPadded, new Base64UrlPadded()},
+            };
         }
 
-        /// <summary>
-        /// Encode byte array
-        /// </summary>
-        /// <param name="encoding">Multibase encoding</param>
-        /// <returns>Multibase encoded string</returns>
-        public static string Encode(MultibaseEncoding encoding, byte[] data) => encoding.Encode(data);
+        protected abstract string Name { get; }
+        protected abstract char Prefix { get; }
+        protected abstract bool IsValid(string value);
 
-        /// <summary>
-        /// Encode byte array
-        /// </summary>
-        /// <returns>String without Multibase prefix</returns>
-        public static string EncodeRaw<TEncoding>(byte[] data) where TEncoding : MultibaseEncoding => Encode<TEncoding>(data).Substring(1);
+        internal abstract byte[] DecodeCore(string input);
+        internal abstract string EncodeCore(byte[] bytes);
 
-        /// <summary>
-        /// Encode byte array
-        /// </summary>
-        /// <param name="encoding">Multibase encoding</param>
-        /// <returns>String without Multibase prefix</returns>
-        public static string EncodeRaw(MultibaseEncoding encoding, byte[] data) => encoding.Encode(data).Substring(1);
-
-        /// <summary>
-        /// Decode a Multibase encoded string
-        /// </summary>
-        /// <returns>Decoded bytes</returns>
-        public static byte[] Decode(string s)
+        public static string Encode(MultibaseEncoding encoding, byte[] bytes)
         {
-            MultibaseEncoding encoding;
-            return Decode(s, out encoding);
+            if (!_bases.TryGetValue(encoding, out var @base))
+                throw new NotSupportedException($"{encoding} is not supported.");
+
+            return Encode(@base, bytes);
         }
 
-        /// <summary>
-        /// Decode a Multibase encoded string
-        /// </summary>
-        /// <param name="s">Multibase encoded string</param>
-        /// <param name="encoding">Encoding used</param>
-        /// <returns>Decoded bytes</returns>
-        public static byte[] Decode(string s, out MultibaseEncoding encoding)
+        public static string Encode(string encoding, byte[] bytes)
         {
-            encoding = _encodings.SingleOrDefault(e => e.Identifiers.Contains(s[0]));
-            if (encoding == null)
-                throw new NotSupportedException($"Encoding type is not supported: {s[0]}");
+            var @base = _bases.Values.SingleOrDefault(b => b.Name.Equals(encoding));
+            if (@base == null)
+                throw new NotSupportedException($"{encoding} is not supported.");
 
-            return encoding.Decode(s);
+            return Encode(@base, bytes);
         }
 
-        /// <summary>
-        /// Decode an encoded string without Multibase prefix, but known encoding
-        /// </summary>
-        /// <param name="encoding">Encoding used in input</param>
-        /// <param name="s">Encoded string</param>
-        /// <returns>Decoded bytes</returns>
-        public static byte[] DecodeRaw(MultibaseEncoding encoding, string s) => encoding.Decode(encoding.DefaultIdentifier + s);
-
-        /// <summary>
-        /// Decode an encoded string without Multibase prefix, but known encoding
-        /// </summary>
-        /// <param name="s">Encoded string</param>
-        /// <returns>Decoded bytes</returns>
-        public static byte[] DecodeRaw<TEncoding>(string s) where TEncoding : MultibaseEncoding
+        private static string Encode(Multibase @base, byte[] bytes)
         {
-            var encoding = _encodings.OfType<TEncoding>().SingleOrDefault();
-            if (encoding == null)
-                throw new NotSupportedException($"Encoding type is not supported: {typeof(TEncoding).Name}");
+            if (bytes == null || bytes.Length == 0)
+                throw new ArgumentNullException(nameof(bytes));
 
-            return encoding.Decode(encoding.DefaultIdentifier + s);
+            return @base.Prefix + @base.EncodeCore(bytes);
         }
+
+        public static byte[] Decode(string input, out MultibaseEncoding encoding)
+        {
+            if (string.IsNullOrEmpty(input))
+                throw new ArgumentNullException(nameof(input));
+
+            var @base = _bases.Values.SingleOrDefault(b => b.Prefix == input[0]);
+            if (@base == null)
+                throw new NotSupportedException($"{input[0]} is an unknown encoding prefix.");
+
+            var value = input.Substring(1);
+            encoding = _bases.SingleOrDefault(kv => kv.Value.Equals(@base)).Key;
+
+            if (!@base.IsValid(value))
+                throw new InvalidOperationException($"{value} contains invalid chars for {encoding}.");
+
+            return @base.DecodeCore(value);
+        }
+
+        public static byte[] Decode(string input, out string encoding)
+        {
+            if (string.IsNullOrEmpty(input))
+                throw new ArgumentNullException(nameof(input));
+
+            var @base = _bases.Values.SingleOrDefault(b => b.Prefix == input[0]);
+            if (@base == null)
+                throw new NotSupportedException($"{input[0]} is an unknown encoding prefix.");
+
+            encoding = @base.Name;
+
+            return @base.DecodeCore(input.Substring(1));
+        }
+
+        public static byte[] Decode(string input) => Decode(input, out string _);
     }
 }
