@@ -1,240 +1,160 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
+using Xunit.Sdk;
 
 namespace Multiformats.Base.Tests
 {
     public class MultibaseTests
     {
-        [Fact]
-        public void RoundTrip_Base2() => TestRoundTrip(Multibase.Base2.Encode);
-
-        [Fact]
-        public void RoundTrip_Base8() => TestRoundTrip(Multibase.Base8.Encode);
-
-        [Fact]
-        public void RoundTrip_Base10() => TestRoundTrip(Multibase.Base10.Encode);
-
-        [Fact]
-        public void RoundTrip_Base16Upper() => TestRoundTrip(Multibase.Base16.Encode);
-
-        [Fact]
-        public void RoundTrip_Base16Lower() => TestRoundTrip(b => Multibase.Base16.Encode(b, false));
-
-        [Fact]
-        public void RoundTrip_Base32() => TestRoundTrip(Multibase.Base32.Encode);
-
-        [Fact]
-        public void RoundTrip_Base32Padding() => TestRoundTrip(b => Multibase.Base32.Encode(b, true, false, false, false));
-
-        [Fact]
-        public void RoundTrip_Base32Hex() => TestRoundTrip(b => Multibase.Base32.Encode(b, false, true, true, false));
-
-        [Fact]
-        public void RoundTrip_Base32HexPadding() => TestRoundTrip(b => Multibase.Base32.Encode(b, true, true, true, false));
-
-        [Fact]
-        public void RoundTrip_Base32Z() => TestRoundTrip(b => Multibase.Base32.Encode(b, false, false, false, true));
-
-        [Fact]
-        public void RoundTrip_Base58Bitcoin() => TestRoundTrip(b => Multibase.Base58.Encode(b));
-
-        [Fact]
-        public void RoundTrip_Base58Flickr() => TestRoundTrip(b => Multibase.Base58.Encode(b, Base58Alphabet.Flickr));
-
-        [Fact]
-        public void RoundTrip_Base64() => TestRoundTrip(Multibase.Base64.Encode);
-
-        [Fact]
-        public void RoundTrip_Base64Padding() => TestRoundTrip(b => Multibase.Base64.Encode(b, true, false));
-
-        [Fact]
-        public void RoundTrip_Base64Url() => TestRoundTrip(b => Multibase.Base64.Encode(b, false, true));
-
-        [Fact]
-        public void RoundTrip_Base64UrlPadding() => TestRoundTrip(b => Multibase.Base64.Encode(b, true, true));
-
-        private static void TestRoundTrip(Func<byte[], string> encode)
+        [Theory]
+        [InlineData(MultibaseEncoding.Identity)]
+        [InlineData(MultibaseEncoding.Base2)]
+        [InlineData(MultibaseEncoding.Base8)]
+        [InlineData(MultibaseEncoding.Base10)]
+        [InlineData(MultibaseEncoding.Base16Lower)]
+        [InlineData(MultibaseEncoding.Base16Upper)]
+        [InlineData(MultibaseEncoding.Base32Lower)]
+        [InlineData(MultibaseEncoding.Base32Upper)]
+        [InlineData(MultibaseEncoding.Base32PaddedLower)]
+        [InlineData(MultibaseEncoding.Base32PaddedUpper)]
+        [InlineData(MultibaseEncoding.Base32HexLower)]
+        [InlineData(MultibaseEncoding.Base32HexUpper)]
+        [InlineData(MultibaseEncoding.Base32HexPaddedLower)]
+        [InlineData(MultibaseEncoding.Base32HexPaddedUpper)]
+        [InlineData(MultibaseEncoding.Base58Btc)]
+        [InlineData(MultibaseEncoding.Base58Flickr)]
+        [InlineData(MultibaseEncoding.Base64)]
+        [InlineData(MultibaseEncoding.Base64Padded)]
+        [InlineData(MultibaseEncoding.Base64Url)]
+        [InlineData(MultibaseEncoding.Base64UrlPadded)]
+        public void TestRoundTrip(MultibaseEncoding encoding)
         {
             var rand = new Random(Environment.TickCount);
             var buf = new byte[rand.Next(16, 256)];
             rand.NextBytes(buf);
 
-            var encoded = encode(buf);
+            var encoded = Multibase.Encode(encoding, buf);
             var decoded = Multibase.Decode(encoded);
 
             Assert.Equal(decoded, buf);
         }
 
-        [Fact]
-        public void EncodeDecode_Base2() => TestEncodeDecode(Multibase.Base2.Encode, "1101000 1100101 1101100 1101100 1101111 100000 1110111 1101111 1110010 1101100 1100100");
-
-        [Fact]
-        public void EncodeDecode_Base8() => TestEncodeDecode(Multibase.Base8.Encode, "150 145 154 154 157 40 167 157 162 154 144");
-
-        [Fact]
-        public void EncodeDecode_Base10() => TestEncodeDecode(Multibase.Base10.Encode, "104 101 108 108 111 32 119 111 114 108 100");
-
-        [Fact]
-        public void EncodeDecode_Base16Upper() => TestEncodeDecode(Multibase.Base16.Encode, "68656C6C6F20776F726C64");
-
-        [Fact]
-        public void EncodeDecode_Base16Lower() => TestEncodeDecode(b => Multibase.Base16.Encode(b, false), "68656c6c6f20776f726c64");
-
-        [Fact]
-        public void EncodeDecode_Base32() => TestEncodeDecode(Multibase.Base32.Encode, "NBSWY3DPEB3W64TMMQ");
-
-        [Fact]
-        public void EncodeDecode_Base32Padding() => TestEncodeDecode(b => Multibase.Base32.Encode(b, true), "NBSWY3DPEB3W64TMMQ======");
-
-        [Fact]
-        public void EncodeDecode_Base32Hex() => TestEncodeDecode(b => Multibase.Base32.Encode(b, false, hex: true), "D1IMOR3F41RMUSJCCG");
-
-        [Fact]
-        public void EncodeDecode_Base32HexPadding() => TestEncodeDecode(b => Multibase.Base32.Encode(b, true, hex: true), "D1IMOR3F41RMUSJCCG======");
-
-        [Fact]
-        public void EncodeDecode_Base32Z() => TestEncodeDecode(b => Multibase.Base32.Encode(b, false, zbase: true), "pb1sa5dxrb5s6hucco");
-
-        [Fact]
-        public void EncodeDecode_Base58Bitcoin() => TestEncodeDecode(b => Multibase.Base58.Encode(b), "StV1DL6CwTryKyV");
-
-        [Fact]
-        public void EncodeDecode_Base58Flickr() => TestEncodeDecode(b => Multibase.Base58.Encode(b, Base58Alphabet.Flickr), "rTu1dk6cWsRYjYu");
-
-        [Fact]
-        public void EncodeDecode_Base64() => TestEncodeDecode(Multibase.Base64.Encode, "aGVsbG8gd29ybGQ");
-
-        [Fact]
-        public void EncodeDecode_Base64Padding() => TestEncodeDecode(b => Multibase.Base64.Encode(b, true), "aGVsbG8gd29ybGQ=");
-
-        [Fact]
-        public void EncodeDecode_Base64Url() => TestEncodeDecode(b => Multibase.Base64.Encode(b, false, url: true), "aGVsbG8gd29ybGQ");
-
-        [Fact]
-        public void EncodeDecode_Base64UrlPadding() => TestEncodeDecode(b => Multibase.Base64.Encode(b, true, url: true), "aGVsbG8gd29ybGQ=");
-
-        private static void TestEncodeDecode(Func<byte[], string> encode, string expected)
+        // Official test vectors
+        private static void TestVector(string encoding, string encoded, string expected)
         {
-            var bytes = Encoding.UTF8.GetBytes("hello world");
-            var encoded = encode(bytes);
+            var decoded = Multibase.Decode(encoded, out string mbEncoding);
 
-            Assert.Equal(encoded.Substring(1), expected);
+            Assert.Equal(encoding, mbEncoding);
+            Assert.Equal(expected, Encoding.UTF8.GetString(decoded));
 
-            var decoded = Multibase.Decode(encoded);
-            Assert.Equal(decoded, bytes);
+            var rencoded = Multibase.Encode(mbEncoding, decoded);
+
+            Assert.Equal(encoded, rencoded);
+        }
+        [Theory]
+        [CsvData("test1.csv")]
+        public void TestVector_1(string encoding, string encoded)
+        {
+            var expected = "Decentralize everything!!";
+
+            TestVector(encoding, encoded, expected);
         }
 
-        [Fact]
-        public void TestCustomSeparator()
+
+        [Theory]
+        [CsvData("test2.csv")]
+        public void TestVector_2(string encoding, string encoded)
         {
-            var bytes = Encoding.UTF8.GetBytes("hello world");
-            var encoded = Multibase.Base8.Encode(bytes, '-');
+            var expected = "yes mani !";
 
-            Assert.Equal(encoded, "7150-145-154-154-157-40-167-157-162-154-144");
-
-            var decoded = Multibase.Base8.Decode(encoded, '-');
-
-            Assert.Equal(decoded, bytes);
-            Assert.Equal(Encoding.UTF8.GetString(decoded), "hello world");
-        }
-
-        [Fact]
-        public void TestBase16Mismatch_Lower()
-        {
-            var bytes = Encoding.UTF8.GetBytes("hello world");
-            var encoded = Multibase.Base16.Encode(bytes, false).ToCharArray();
-            encoded[0] = char.ToUpper(encoded[0]);
-
-            Assert.Throws<Exception>(() => Multibase.Base16.Decode(new string(encoded)));
-        }
-
-        [Fact]
-        public void TestBase16Mismatch_Upper()
-        {
-            var bytes = Encoding.UTF8.GetBytes("hello world");
-            var encoded = Multibase.Base16.Encode(bytes, true).ToCharArray();
-            encoded[0] = char.ToLower(encoded[0]);
-
-            Assert.Throws<Exception>(() => Multibase.Base16.Decode(new string(encoded)));
-        }
-
-        [Fact]
-        public void TestBase32Mismatch_Lower()
-        {
-            var bytes = Encoding.UTF8.GetBytes("hello world");
-            var encoded = Multibase.Base32.Encode(bytes, true, false).ToCharArray();
-            encoded[0] = char.ToUpper(encoded[0]);
-
-            Assert.Throws<Exception>(() => Multibase.Base32.Decode(new string(encoded)));
-        }
-
-        [Fact]
-        public void TestBase32Mismatch_Upper()
-        {
-            var bytes = Encoding.UTF8.GetBytes("hello world");
-            var encoded = Multibase.Base32.Encode(bytes, true, true).ToCharArray();
-            encoded[0] = char.ToLower(encoded[0]);
-
-            Assert.Throws<Exception>(() => Multibase.Base32.Decode(new string(encoded)));
+            TestVector(encoding, encoded, expected);
         }
 
         [Theory]
-        [InlineData(typeof(Base32Encoding), "xhello world")]
-        [InlineData(typeof(Base58Encoding), "xhello world")]
-        [InlineData(typeof(Base64Encoding), "xhello world")]
-        public void TestBases_NotSupportedIdentifiers(Type type, string invalid)
+        [CsvData("test3.csv")]
+        public void TestVector_3(string encoding, string encoded)
         {
-            var encoder = (MultibaseEncoding)Activator.CreateInstance(type);
+            var expected = "hello world";
 
-            Assert.Throws<NotSupportedException>(() => encoder.Decode(invalid));
+            TestVector(encoding, encoded, expected);
         }
 
-        [Fact]
-        public void Encode_GivenUnsupportedEncoding_Throws()
+        [Theory]
+        [CsvData("test4.csv")]
+        public void TestVector_4(string encoding, string encoded)
         {
-            Assert.Throws<NotSupportedException>(() => Multibase.Encode<TestEncoding>(Encoding.UTF8.GetBytes("hello world")));
+            var expected = "\x00yes mani !";
+            
+            TestVector(encoding, encoded, expected);
         }
 
-        private class TestEncoding : MultibaseEncoding
+        [Theory]
+        [CsvData("test5.csv")]
+        public void TestVector_5(string encoding, string encoded)
         {
-            public override char[] Identifiers => throw new NotImplementedException();
+            var expected = "\x00\x00yes mani !";
 
-            public override byte[] Decode(string str)
+            TestVector(encoding, encoded, expected);
+        }
+
+        [Theory]
+        [CsvData("test6.csv")]
+        public void TestVector_6(string encoding, string encoded)
+        {
+            var expected = "hello world";
+
+            var decoded = Multibase.Decode(encoded, out string mbEncoding);
+
+            Assert.Equal(encoding, mbEncoding);
+            Assert.Equal(expected, Encoding.UTF8.GetString(decoded));
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    public class CsvDataAttribute : DataAttribute
+    {
+        private readonly string _fileName;
+        public CsvDataAttribute(string fileName)
+        {
+            _fileName = fileName;
+        }
+
+        public override IEnumerable<object[]> GetData(MethodInfo testMethod)
+        {
+            var pars = testMethod.GetParameters();
+            var parameterTypes = pars.Select(par => par.ParameterType).ToArray();
+            using (var csvFile = File.OpenText(_fileName))
             {
-                throw new NotImplementedException();
+                //csvFile.ReadLine();// Delimiter Row: "sep=,". Comment out if not used
+                csvFile.ReadLine(); // Headings Row. Comment out if not used
+                string line;
+                while ((line = csvFile.ReadLine()) != null)
+                {
+                    var row = line.Split(',').Select(c => c.Trim('"', ' ')).ToArray();
+                    yield return ConvertParameters((object[])row, parameterTypes);
+                }
+            }
+        }
+
+        private static object[] ConvertParameters(IReadOnlyList<object> values, IReadOnlyList<Type> parameterTypes)
+        {
+            var result = new object[parameterTypes.Count];
+            for (var idx = 0; idx < parameterTypes.Count; idx++)
+            {
+                result[idx] = ConvertParameter(values[idx], parameterTypes[idx]);
             }
 
-            public override string Encode(byte[] data)
-            {
-                throw new NotImplementedException();
-            }
+            return result;
         }
 
-        [Fact]
-        public void Decode_GivenUnknownIdentifier_Throws()
+        private static object ConvertParameter(object parameter, Type parameterType)
         {
-            Assert.Throws<NotSupportedException>(() => Multibase.Decode("xhello world"));
-        }
-
-        [Fact]
-        public void DecodeRaw_CanDecodeRawValue()
-        {
-            var rawEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes("hello world")).Replace("-", "");
-            var rawDecoded = Multibase.DecodeRaw(Multibase.Base64, rawEncoded);
-
-            Assert.Equal(rawDecoded, Encoding.UTF8.GetBytes("hello world"));
-        }
-
-        [Fact]
-        public void DecodeRawGeneric_CanDecodeRawValue()
-        {
-            var rawEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes("hello world")).Replace("-", "");
-            var rawDecoded = Multibase.DecodeRaw<Base64Encoding>(rawEncoded);
-
-            Assert.Equal(rawDecoded, Encoding.UTF8.GetBytes("hello world"));
+            return parameterType == typeof(int) ? Convert.ToInt32(parameter) : parameter;
         }
     }
 }

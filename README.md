@@ -12,9 +12,6 @@
 > C# implementation of [multiformats/multibase](https://github.com/multiformats/multibase).
 
 As stated in the specs, multibase encoded strings are prefixed with an identifier for the base it's encoded in.
-There's a lot of [discussion going on](https://github.com/multiformats/multibase/issues) about this spec, so consider this work in progress.
-
-If you don't care about the multibase part, you can use the EncodeRaw/DecodeRaw methods to just encode/decode to bases without the prefix.
 
 ## Table of Contents
 
@@ -30,52 +27,35 @@ If you don't care about the multibase part, you can use the EncodeRaw/DecodeRaw 
 
   PM> Install-Package Multiformats.Base
 
+  CLI> dotnet install Multiformats.Base
+
 ## Usage
-``` cs
-var encoded = Multibase.Base32.Encode(new byte[] {0,1,2,3);
-var encoded = Multibase.Encode<Base32Encoding>(new byte[] {0,1,2,3);
-
-// raw encode without multibase prefix
-var rawEncoded = Multibase.Encode<Base32Encoding>(new byte[] {0,1,2,3);
-
-var decoded = Multibase.Decode(encoded);
-
-// decode and get encoding
-var decoded = Multibase.Decode(encoded, out encoding);
-
-// raw decode without multibase prefix
-var rawDecoded = Multibase.DecodeRaw<Base32Encoding>(encoded);
+``` csharp
+var encoded = Multibase.Encode(MultibaseEncoding.Base32Lower, "hello world");
+// bnbswy3dpeb3w64tmmq
+var decoded = Multibase.Decode(encoded, out MultibaseEncoding encoding);
+// "hello world" (encoding: MultibaseEncoding.Base32Lower)
 ```
-
-All `Encode` methods can be called with only one parameter, the data to be encoded, which will use the default options regarding padding and letter case.
-Some encodings have overloaded versions of `Encode` to let you specify additional options, like Base58 lets you select between Bitcoin and Flickr alphabet.
-
-``` cs
-var encoded = Multibase.Base58.Encode(new byte[] {0,1,2,3}, Base58Alphabet.Flickr);
-```
-
-For base 2, 8 and 10 you can specify your own separator, default is space.
-
-``` cs
-// separator is dash ('-')
-var encoded = Multibase.Base8.Encode(new byte[] {0,1,2,3}, '-');
-// = "7150-145-154-154-157-40-167-157-162-154-144"
-```
-
-Be aware that you can not pass in additional parameters to `Multibase.Decode` to decode, so you have to know what encoding it's in and call the base encoder directly if you use custom separators.
 
 ## Supported base encodings
 
+* Identity
 * Base2
 * Base8
 * Base10
 * Base16
-* Base32 (with and without padding, hex, upper/lower, zbase32)
-  * Default: no padding, lowercase
-* Base58 (bitcoin, flickr)
-  * Default: bitcoin
-* Base64 (with and without padding, url-safe)
-  * Default: no padding, not url-safe
+* Base32
+  * Lower / Upper
+  * Padded Lower / Upper
+  * Hex Lower / Upper
+  * Hex Padded Lower / Upper
+  * Z-Base32
+* Base58
+  * Bitcoin
+  * Flickr
+* Base64
+  * Unpadded / Padded
+  * UrlSafe Unpadded / Padded
 
 ## Maintainers
 
@@ -91,9 +71,4 @@ Small note: If editing the README, please conform to the [standard-readme](https
 
 ## License
 
-[MIT](LICENSE) © 2016 Trond Bråthen
-
-# Third parties
-
-[SimpleBase](https://github.com/ssg/SimpleBase) Apache 2.0
-[BaseNEncodings.Net](https://github.com/wujikui/BaseNEncodings.Net) Apache 2.0
+[MIT](LICENSE) © 2018 Trond Bråthen
