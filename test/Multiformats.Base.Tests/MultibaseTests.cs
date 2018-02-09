@@ -39,8 +39,9 @@ namespace Multiformats.Base.Tests
             rand.NextBytes(buf);
 
             var encoded = Multibase.Encode(encoding, buf);
-            var decoded = Multibase.Decode(encoded);
+            var decoded = Multibase.Decode(encoded, out MultibaseEncoding decodedEncoding);
 
+            Assert.Equal(encoding, decodedEncoding);
             Assert.Equal(decoded, buf);
         }
 

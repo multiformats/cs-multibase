@@ -36,12 +36,20 @@ namespace Multiformats.Base
             };
         }
 
+        public static Multibase Base2 => _bases[MultibaseEncoding.Base2];
+        public static Multibase Base8 => _bases[MultibaseEncoding.Base8];
+        public static Multibase Base10 => _bases[MultibaseEncoding.Base10];
+        public static Multibase Base16 => _bases[MultibaseEncoding.Base16Lower];
+        public static Multibase Base32 => _bases[MultibaseEncoding.Base32Lower];
+        public static Multibase Base58 => _bases[MultibaseEncoding.Base58Btc];
+        public static Multibase Base64 => _bases[MultibaseEncoding.Base64];
+
         protected abstract string Name { get; }
         protected abstract char Prefix { get; }
         protected abstract bool IsValid(string value);
 
-        internal abstract byte[] DecodeCore(string input);
-        internal abstract string EncodeCore(byte[] bytes);
+        public abstract byte[] Decode(string input);
+        public abstract string Encode(byte[] bytes);
 
         public static string Encode(MultibaseEncoding encoding, byte[] bytes)
         {
@@ -65,7 +73,7 @@ namespace Multiformats.Base
             if (bytes == null || bytes.Length == 0)
                 throw new ArgumentNullException(nameof(bytes));
 
-            return @base.Prefix + @base.EncodeCore(bytes);
+            return @base.Prefix + @base.Encode(bytes);
         }
 
         public static byte[] Decode(string input, out MultibaseEncoding encoding)
@@ -83,7 +91,7 @@ namespace Multiformats.Base
             if (!@base.IsValid(value))
                 throw new InvalidOperationException($"{value} contains invalid chars for {encoding}.");
 
-            return @base.DecodeCore(value);
+            return @base.Decode(value);
         }
 
         public static byte[] Decode(string input, out string encoding)
@@ -97,9 +105,7 @@ namespace Multiformats.Base
 
             encoding = @base.Name;
 
-            return @base.DecodeCore(input.Substring(1));
+            return @base.Decode(input.Substring(1));
         }
-
-        public static byte[] Decode(string input) => Decode(input, out string _);
     }
 }

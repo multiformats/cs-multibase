@@ -8,8 +8,8 @@ namespace Multiformats.Base
         protected override char Prefix => 'v';
         protected override bool IsValid(string value) => value.All(c => AlphabetRfc4648HexLower.Contains(c));
 
-        internal override byte[] DecodeCore(string input) => Decode(input, AlphabetRfc4648HexLower, false, LetterCasing.Lower);
+        public override byte[] Decode(string input) => Decode(input, AlphabetRfc4648HexLower, false, LetterCasing.Lower);
 
-        internal override string EncodeCore(byte[] bytes) => Encode(bytes, AlphabetRfc4648HexLower, false);
+        public override string Encode(byte[] bytes) => Encode(bytes, AlphabetRfc4648HexLower, false);
     }
 }

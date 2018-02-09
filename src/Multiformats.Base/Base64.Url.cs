@@ -10,8 +10,8 @@ namespace Multiformats.Base
         protected override char Prefix => 'u';
         protected override bool IsValid(string value) => value.All(c => ValidChars.Contains(c));
 
-        internal override byte[] DecodeCore(string input) => Decode(input, true, false);
+        public override byte[] Decode(string input) => Decode(input, true, false);
 
-        internal override string EncodeCore(byte[] bytes) => Encode(bytes, true, false);
+        public override string Encode(byte[] bytes) => Encode(bytes, true, false);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 
@@ -12,7 +13,7 @@ namespace Multiformats.Base
         protected override char Prefix => '9';
         protected override bool IsValid(string value) => value.All(c => ValidChars.Contains(c));
 
-        internal override byte[] DecodeCore(string input)
+        public override byte[] Decode(string input)
         {
             var big = BigInteger.Parse(new string(input.SkipWhile(c => c == '0').ToArray()));
             return LeadingZeros(input).Concat(big.ToByteArray().Reverse()).ToArray();
@@ -28,7 +29,7 @@ namespace Multiformats.Base
             return Enumerable.Range(0, input.TakeWhile(b => b == 0x00).Count()).Select(_ => '0');
         }
 
-        internal override string EncodeCore(byte[] bytes)
+        public override string Encode(byte[] bytes)
         {
             var big = new BigInteger(bytes.SkipWhile(b => b == 0x00).Reverse().ToArray());
             return new string(LeadingNulls(bytes).ToArray()) + big.ToString();
