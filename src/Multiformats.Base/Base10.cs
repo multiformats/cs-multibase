@@ -15,8 +15,8 @@ namespace Multiformats.Base
 
         public override byte[] Decode(string input)
         {
-            var big = BigInteger.Parse(new string(input.SkipWhile(c => c == '0').ToArray()));
-            return LeadingZeros(input).Concat(big.ToByteArray().Reverse()).ToArray();
+            var big = BigInteger.Parse("00" + input, NumberStyles.None);
+            return LeadingZeros(input).Concat(big.ToByteArray().Reverse().SkipWhile(b => b == 0)).ToArray();
         }
 
         private static IEnumerable<byte> LeadingZeros(IEnumerable<char> input)
@@ -31,7 +31,7 @@ namespace Multiformats.Base
 
         public override string Encode(byte[] bytes)
         {
-            var big = new BigInteger(bytes.SkipWhile(b => b == 0x00).Reverse().ToArray());
+            var big = new BigInteger(bytes.Reverse().Concat(new byte[]{0x00}).ToArray());
             return new string(LeadingNulls(bytes).ToArray()) + big.ToString();
         }
     }
