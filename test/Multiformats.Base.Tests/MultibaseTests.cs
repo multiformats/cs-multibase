@@ -11,6 +11,61 @@ namespace Multiformats.Base.Tests
 {
     public class MultibaseTests
     {
+        [Fact]
+        public void Decode_GivenInvalidChars_ThrowsInvalidOperationException()
+        {
+            // prefix 0 - base2
+            // value 99 - invalid chars
+
+            Assert.Throws<InvalidOperationException>(() => Multibase.Decode("099", out string _));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Decode_GivenEmptyInput_ThrowsArgumentNullException(string value)
+        {
+            Assert.Throws<ArgumentNullException>(() => Multibase.Decode(value, out string _));
+        }
+
+        [Fact]
+        public void Decode_GivenUnknownPrefix_ThrowsUnsupportedException()
+        {
+            Assert.Throws<NotSupportedException>(() => Multibase.Decode("ø", out string _));
+        }
+
+        [Fact]
+        public void DecodeRaw_GivenUnknownEncoding_ThrowsUnsupportedException()
+        {
+            Assert.Throws<NotSupportedException>(() => Multibase.DecodeRaw((MultibaseEncoding)0x2000, "abab"));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void DecodeRaw_GivenEmptyInput_ThrowsArgumentNullException(string value)
+        {
+            Assert.Throws<ArgumentNullException>(() => Multibase.DecodeRaw(MultibaseEncoding.Identity, value));
+        }
+
+        [Fact]
+        public void Encode_GivenEmptyBytes_ThrowsArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() => Multibase.Encode(MultibaseEncoding.Base2, new byte[] {}));
+        }
+
+        [Fact]
+        public void Encode_GivenNullBytes_ThrowsArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() => Multibase.Encode(MultibaseEncoding.Base2, null));
+        }
+
+        [Fact]
+        public void Encode_GivenUnknownEncoding_ThrowsUnsupportedException()
+        {
+            Assert.Throws<NotSupportedException>(() => Multibase.Encode((MultibaseEncoding)0x2000, new byte[]{ 0,1,2,3 }));
+        }
+
         [Theory]
         [InlineData(MultibaseEncoding.Identity)]
         [InlineData(MultibaseEncoding.Base2)]
@@ -193,7 +248,7 @@ namespace Multiformats.Base.Tests
         {
             var expected = "hello world";
 
-            var decoded = Multibase.Decode(encoded, out string mbEncoding);
+            var decoded = Multibase.Decode(encoded, out string mbEncoding, false);
 
             Assert.Equal(encoding, mbEncoding);
             Assert.Equal(expected, Encoding.UTF8.GetString(decoded));

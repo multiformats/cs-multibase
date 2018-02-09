@@ -27,8 +27,8 @@ namespace Multiformats.Base
                 {MultibaseEncoding.Base32HexPaddedLower, new Base32HexPaddedLower()},
                 {MultibaseEncoding.Base32HexPaddedUpper, new Base32HexPaddedUpper()},
                 {MultibaseEncoding.Base32Z, new Base32Z()},
-                {MultibaseEncoding.Base58Flickr, new Base58Flickr()},
                 {MultibaseEncoding.Base58Btc, new Base58Btc()},
+                {MultibaseEncoding.Base58Flickr, new Base58Flickr()},
                 {MultibaseEncoding.Base64, new Base64Normal()},
                 {MultibaseEncoding.Base64Padded, new Base64Padded()},
                 {MultibaseEncoding.Base64Url, new Base64Url()},
@@ -52,6 +52,12 @@ namespace Multiformats.Base
         public abstract byte[] Decode(string input);
         public abstract string Encode(byte[] bytes);
 
+        /// <summary>
+        /// Encode a byte array to multibase given encoding.
+        /// </summary>
+        /// <param name="encoding">Encoding</param>
+        /// <param name="bytes">Bytes</param>
+        /// <returns>Encoded string</returns>
         public static string Encode(MultibaseEncoding encoding, byte[] bytes)
         {
             if (!_bases.TryGetValue(encoding, out var @base))
@@ -60,6 +66,12 @@ namespace Multiformats.Base
             return Encode(@base, bytes, true);
         }
 
+        /// <summary>
+        /// Encode a byte array to multibase given encoding in string format.
+        /// </summary>
+        /// <param name="encoding">Encoding</param>
+        /// <param name="bytes">Bytes</param>
+        /// <returns>Encoded string</returns>
         public static string Encode(string encoding, byte[] bytes)
         {
             var @base = _bases.Values.SingleOrDefault(b => b.Name.Equals(encoding));
@@ -77,6 +89,12 @@ namespace Multiformats.Base
             return prefix ? @base.Prefix + @base.Encode(bytes) : @base.Encode(bytes);
         }
 
+        /// <summary>
+        /// Encode a byte array given encoding (without multibase prefix).
+        /// </summary>
+        /// <param name="encoding">Encoding</param>
+        /// <param name="bytes">Bytes</param>
+        /// <returns>Encoded string</returns>
         public static string EncodeRaw(MultibaseEncoding encoding, byte[] bytes)
         {
             var @base = _bases[encoding];
@@ -86,7 +104,14 @@ namespace Multiformats.Base
             return Encode(@base, bytes, false);
         }
 
-        public static byte[] Decode(string input, out MultibaseEncoding encoding)
+        /// <summary>
+        /// Decode an multibase encoded string.
+        /// </summary>
+        /// <param name="input">Encoded string</param>
+        /// <param name="encoding">Encoding used</param>
+        /// <param name="strict">Don't allow non-valid characters for given encoding</param>
+        /// <returns>Bytes</returns>
+        public static byte[] Decode(string input, out MultibaseEncoding encoding, bool strict = true)
         {
             if (string.IsNullOrEmpty(input))
                 throw new ArgumentNullException(nameof(input));
@@ -98,13 +123,20 @@ namespace Multiformats.Base
             var value = input.Substring(1);
             encoding = _bases.SingleOrDefault(kv => kv.Value.Equals(@base)).Key;
 
-            if (!@base.IsValid(value))
+            if (strict && !@base.IsValid(value))
                 throw new InvalidOperationException($"{value} contains invalid chars for {encoding}.");
 
             return @base.Decode(value);
         }
 
-        public static byte[] Decode(string input, out string encoding)
+        /// <summary>
+        /// Decode an multibase encoded string.
+        /// </summary>
+        /// <param name="input">Encoded string</param>
+        /// <param name="encoding">Encoding used</param>
+        /// <param name="strict">Don't allow non-valid characters for given encoding</param>
+        /// <returns>Bytes</returns>
+        public static byte[] Decode(string input, out string encoding, bool strict = true)
         {
             if (string.IsNullOrEmpty(input))
                 throw new ArgumentNullException(nameof(input));
@@ -113,18 +145,27 @@ namespace Multiformats.Base
             if (@base == null)
                 throw new NotSupportedException($"{input[0]} is an unknown encoding prefix.");
 
+            var value = input.Substring(1);
             encoding = @base.Name;
 
-            return @base.Decode(input.Substring(1));
+            if (strict && !@base.IsValid(value))
+                throw new InvalidOperationException($"{value} contains invalid chars for {encoding}.");
+
+            return @base.Decode(value);
         }
 
+        /// <summary>
+        /// Decode an encoded string using given encoded (without multibase prefix).
+        /// </summary>
+        /// <param name="encoding">Encoding</param>
+        /// <param name="input">Encoded string</param>
+        /// <returns>Bytes</returns>
         public static byte[] DecodeRaw(MultibaseEncoding encoding, string input)
         {
             if (string.IsNullOrEmpty(input))
                 throw new ArgumentNullException(nameof(input));
 
-            var @base = _bases[encoding];
-            if (@base == null)
+            if (!_bases.TryGetValue(encoding, out var @base))
                 throw new NotSupportedException($"{encoding} is an unknown encoding.");
 
             return @base.Decode(input);
@@ -155,7 +196,7 @@ namespace Multiformats.Base
                     try
                     {
                         bytes = @base.Decode(input);
-                        encoding = _bases.SingleOrDefault(kv => kv.Value == @base).Key;
+                        encoding = _bases.SingleOrDefault(kv => kv.Value.Equals(@base)).Key;
                         return true;
                     }
                     catch
