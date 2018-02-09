@@ -38,6 +38,39 @@ namespace Multiformats.Base.Tests
             var buf = new byte[rand.Next(16, 256)];
             rand.NextBytes(buf);
 
+            var encoded = Multibase.EncodeRaw(encoding, buf);
+            var decoded = Multibase.DecodeRaw(encoding, encoded);
+
+            Assert.Equal(decoded, buf);
+        }
+
+        [Theory]
+        [InlineData(MultibaseEncoding.Identity)]
+        [InlineData(MultibaseEncoding.Base2)]
+        [InlineData(MultibaseEncoding.Base8)]
+        [InlineData(MultibaseEncoding.Base10)]
+        [InlineData(MultibaseEncoding.Base16Lower)]
+        [InlineData(MultibaseEncoding.Base16Upper)]
+        [InlineData(MultibaseEncoding.Base32Lower)]
+        [InlineData(MultibaseEncoding.Base32Upper)]
+        [InlineData(MultibaseEncoding.Base32PaddedLower)]
+        [InlineData(MultibaseEncoding.Base32PaddedUpper)]
+        [InlineData(MultibaseEncoding.Base32HexLower)]
+        [InlineData(MultibaseEncoding.Base32HexUpper)]
+        [InlineData(MultibaseEncoding.Base32HexPaddedLower)]
+        [InlineData(MultibaseEncoding.Base32HexPaddedUpper)]
+        [InlineData(MultibaseEncoding.Base58Btc)]
+        [InlineData(MultibaseEncoding.Base58Flickr)]
+        [InlineData(MultibaseEncoding.Base64)]
+        [InlineData(MultibaseEncoding.Base64Padded)]
+        [InlineData(MultibaseEncoding.Base64Url)]
+        [InlineData(MultibaseEncoding.Base64UrlPadded)]
+        public void TestRoundTripRaw(MultibaseEncoding encoding)
+        {
+            var rand = new Random(Environment.TickCount);
+            var buf = new byte[rand.Next(16, 256)];
+            rand.NextBytes(buf);
+
             var encoded = Multibase.Encode(encoding, buf);
             var decoded = Multibase.Decode(encoded, out MultibaseEncoding decodedEncoding);
 
