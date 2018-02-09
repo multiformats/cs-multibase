@@ -6,11 +6,11 @@ namespace Multiformats.Base
 {
     internal class Base8 : Multibase
     {
-        internal static readonly string ValidChars = "01234567";
+        private static readonly char[] _alphabet = {'0', '1', '2', '3', '4', '5', '6', '7'};
 
         protected override string Name => "base8";
         protected override char Prefix => '7';
-        protected override bool IsValid(string value) => value.All(c => ValidChars.Contains(c));
+        protected override char[] Alphabet => _alphabet;
 
         private static byte[] FromOct(byte o) => new[] { (byte)(o >> 2), (byte)((o >> 1) & 1), (byte)(o & 1) };
         private static byte ToNum8(char c) => Convert.ToByte($"{c}", 8);

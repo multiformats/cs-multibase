@@ -7,11 +7,11 @@ namespace Multiformats.Base
 {
     internal class Base10 : Multibase
     {
-        internal static readonly string ValidChars = "0123456789";
+        private static readonly char[] _alphabet = "0123456789".ToCharArray();
 
         protected override string Name => "base10";
         protected override char Prefix => '9';
-        protected override bool IsValid(string value) => value.All(c => ValidChars.Contains(c));
+        protected override char[] Alphabet => _alphabet;
 
         public override byte[] Decode(string input)
         {

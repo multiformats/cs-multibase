@@ -27,8 +27,8 @@ namespace Multiformats.Base
                 {MultibaseEncoding.Base32HexPaddedLower, new Base32HexPaddedLower()},
                 {MultibaseEncoding.Base32HexPaddedUpper, new Base32HexPaddedUpper()},
                 {MultibaseEncoding.Base32Z, new Base32Z()},
-                {MultibaseEncoding.Base58Btc, new Base58Btc()},
                 {MultibaseEncoding.Base58Flickr, new Base58Flickr()},
+                {MultibaseEncoding.Base58Btc, new Base58Btc()},
                 {MultibaseEncoding.Base64, new Base64Normal()},
                 {MultibaseEncoding.Base64Padded, new Base64Padded()},
                 {MultibaseEncoding.Base64Url, new Base64Url()},
@@ -46,7 +46,8 @@ namespace Multiformats.Base
 
         protected abstract string Name { get; }
         protected abstract char Prefix { get; }
-        protected abstract bool IsValid(string value);
+        protected abstract char[] Alphabet { get; }
+        protected virtual bool IsValid(string value) => value.Distinct().All(c => Array.IndexOf(Alphabet, c) > -1);
 
         public abstract byte[] Decode(string input);
         public abstract string Encode(byte[] bytes);
@@ -56,7 +57,7 @@ namespace Multiformats.Base
             if (!_bases.TryGetValue(encoding, out var @base))
                 throw new NotSupportedException($"{encoding} is not supported.");
 
-            return Encode(@base, bytes);
+            return Encode(@base, bytes, true);
         }
 
         public static string Encode(string encoding, byte[] bytes)
@@ -65,15 +66,24 @@ namespace Multiformats.Base
             if (@base == null)
                 throw new NotSupportedException($"{encoding} is not supported.");
 
-            return Encode(@base, bytes);
+            return Encode(@base, bytes, true);
         }
 
-        private static string Encode(Multibase @base, byte[] bytes)
+        private static string Encode(Multibase @base, byte[] bytes, bool prefix)
         {
             if (bytes == null || bytes.Length == 0)
                 throw new ArgumentNullException(nameof(bytes));
 
-            return @base.Prefix + @base.Encode(bytes);
+            return prefix ? @base.Prefix + @base.Encode(bytes) : @base.Encode(bytes);
+        }
+
+        public static string EncodeRaw(MultibaseEncoding encoding, byte[] bytes)
+        {
+            var @base = _bases[encoding];
+            if (@base == null)
+                throw new NotSupportedException($"{encoding} is not supported.");
+
+            return Encode(@base, bytes, false);
         }
 
         public static byte[] Decode(string input, out MultibaseEncoding encoding)
@@ -106,6 +116,57 @@ namespace Multiformats.Base
             encoding = @base.Name;
 
             return @base.Decode(input.Substring(1));
+        }
+
+        public static byte[] DecodeRaw(MultibaseEncoding encoding, string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                throw new ArgumentNullException(nameof(input));
+
+            var @base = _bases[encoding];
+            if (@base == null)
+                throw new NotSupportedException($"{encoding} is an unknown encoding.");
+
+            return @base.Decode(input);
+        }
+
+        /// <summary>
+        /// Try to decode an encoded string. If prefixed with a multibase prefix it's guaranteed to give the correct value, if not there's no guarantee it will pick the right encoding.
+        /// </summary>
+        /// <param name="input">Encoded string</param>
+        /// <param name="encoding">Guessed encoding</param>
+        /// <param name="bytes">Decoded bytes</param>
+        /// <returns>True on success (no guarantee it's correct), false on error</returns>
+        public static bool TryDecode(string input, out MultibaseEncoding encoding, out byte[] bytes)
+        {
+            try
+            {
+                // special case for base2 without prefix
+                if (input[0] == '0' && input.Length % 8 == 0)
+                    throw new Exception();
+
+                bytes = Decode(input, out encoding);
+                return true;
+            }
+            catch
+            {
+                foreach (var @base in _bases.Values.Skip(1).Where(b => b.IsValid(input)))
+                {
+                    try
+                    {
+                        bytes = @base.Decode(input);
+                        encoding = _bases.SingleOrDefault(kv => kv.Value == @base).Key;
+                        return true;
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+
+            encoding = default(MultibaseEncoding);
+            bytes = null;
+            return false;
         }
     }
 }

@@ -45,6 +45,57 @@ namespace Multiformats.Base.Tests
             Assert.Equal(decoded, buf);
         }
 
+        [Theory]
+        [InlineData("001000100011001010110001101100101011011100111010001110010011000010110110001101001011110100110010100100000011001010111011001100101011100100111100101110100011010000110100101101110011001110010000100100001", MultibaseEncoding.Base2)]
+        [InlineData("71043126154533472162302661513646244031273145344745643206455631620441", MultibaseEncoding.Base8)]
+        [InlineData("f446563656e7472616c697a652065766572797468696e672121", MultibaseEncoding.Base16Lower)]
+        [InlineData("F446563656E7472616C697A652065766572797468696E672121", MultibaseEncoding.Base16Upper)]
+        [InlineData("birswgzloorzgc3djpjssazlwmvzhs5dinfxgoijb", MultibaseEncoding.Base32Lower)]
+        [InlineData("BIRSWGZLOORZGC3DJPJSSAZLWMVZHS5DINFXGOIJB", MultibaseEncoding.Base32Upper)]
+        [InlineData("v8him6pbeehp62r39f9ii0pbmclp7it38d5n6e891", MultibaseEncoding.Base32HexLower)]
+        [InlineData("V8HIM6PBEEHP62R39F9II0PBMCLP7IT38D5N6E891", MultibaseEncoding.Base32HexUpper)]
+        [InlineData("cirswgzloorzgc3djpjssazlwmvzhs5dinfxgoijb", MultibaseEncoding.Base32PaddedLower)]
+        [InlineData("CIRSWGZLOORZGC3DJPJSSAZLWMVZHS5DINFXGOIJB", MultibaseEncoding.Base32PaddedUpper)]
+        [InlineData("t8him6pbeehp62r39f9ii0pbmclp7it38d5n6e891", MultibaseEncoding.Base32HexPaddedLower)]
+        [InlineData("T8HIM6PBEEHP62R39F9II0PBMCLP7IT38D5N6E891", MultibaseEncoding.Base32HexPaddedUpper)]
+        [InlineData("het1sg3mqqt3gn5djxj11y3msci3817depfzgqejb", MultibaseEncoding.Base32Z)]
+        [InlineData("Ztwe7gVTeK8wswS1gf8hrgAua9fcw9reboD", MultibaseEncoding.Base58Flickr)]
+        [InlineData("zUXE7GvtEk8XTXs1GF8HSGbVA9FCX9SEBPe", MultibaseEncoding.Base58Btc)]
+        [InlineData("mRGVjZW50cmFsaXplIGV2ZXJ5dGhpbmchIQ", MultibaseEncoding.Base64)]
+        [InlineData("MRGVjZW50cmFsaXplIGV2ZXJ5dGhpbmchIQ==", MultibaseEncoding.Base64Padded)]
+        [InlineData("uRGVjZW50cmFsaXplIGV2ZXJ5dGhpbmchIQ", MultibaseEncoding.Base64Url)]
+        [InlineData("URGVjZW50cmFsaXplIGV2ZXJ5dGhpbmchIQ==", MultibaseEncoding.Base64UrlPadded)]
+        public void TestTryDecoding_GivenValidEncodedInput_Prefixed(string input, MultibaseEncoding encoding)
+        {
+            var expected = "Decentralize everything!!";
+            var result = Multibase.TryDecode(input, out var decodedEncoding, out var decodedBytes);
+
+            Assert.True(result);
+            Assert.Equal(encoding, decodedEncoding);
+            Assert.Equal(expected, Encoding.UTF8.GetString(decodedBytes));
+        }
+
+        [Theory]
+        [InlineData("01000100011001010110001101100101011011100111010001110010011000010110110001101001011110100110010100100000011001010111011001100101011100100111100101110100011010000110100101101110011001110010000100100001", MultibaseEncoding.Base2)]
+        [InlineData("1043126154533472162302661513646244031273145344745643206455631620441", MultibaseEncoding.Base8)]
+        [InlineData("446563656e7472616c697a652065766572797468696e672121", MultibaseEncoding.Base16Lower)]
+        [InlineData("446563656E7472616C697A652065766572797468696E672121", MultibaseEncoding.Base16Upper)]
+        [InlineData("irswgzloorzgc3djpjssazlwmvzhs5dinfxgoijb", MultibaseEncoding.Base32Lower)]
+        [InlineData("IRSWGZLOORZGC3DJPJSSAZLWMVZHS5DINFXGOIJB", MultibaseEncoding.Base32Upper)]
+        [InlineData("8him6pbeehp62r39f9ii0pbmclp7it38d5n6e891", MultibaseEncoding.Base32HexLower)]
+        [InlineData("8HIM6PBEEHP62R39F9II0PBMCLP7IT38D5N6E891", MultibaseEncoding.Base32HexUpper)]
+        [InlineData("et1sg3mqqt3gn5djxj11y3msci3817depfzgqejb", MultibaseEncoding.Base32Z)]
+        [InlineData("RGVjZW50cmFsaXplIGV2ZXJ5dGhpbmchIQ==", MultibaseEncoding.Base64Padded)]
+        public void TestTryDecoding_GivenValidEncodedInput_Unprefixed(string input, MultibaseEncoding encoding)
+        {
+            var expected = "Decentralize everything!!";
+            var result = Multibase.TryDecode(input, out var decodedEncoding, out var decodedBytes);
+
+            Assert.True(result);
+            Assert.Equal(encoding, decodedEncoding);
+            Assert.Equal(expected, Encoding.UTF8.GetString(decodedBytes));
+        }
+
         // Official test vectors
         private static void TestVector(string encoding, string encoded, string expected)
         {

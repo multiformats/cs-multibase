@@ -1,15 +1,15 @@
-﻿using System.Linq;
-
-namespace Multiformats.Base
+﻿namespace Multiformats.Base
 {
     internal class Base32PaddedUpper : Base32
     {
+        private static readonly char[] _alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567=".ToCharArray();
+
         protected override string Name => "BASE32PAD";
         protected override char Prefix => 'C';
-        protected override bool IsValid(string value) => value.All(c => c == '=' || AlphabetRfc4648Upper.Contains(c));
+        protected override char[] Alphabet => _alphabet;
 
-        public override byte[] Decode(string input) => Decode(input, AlphabetRfc4648Upper, true, LetterCasing.Upper);
+        public override byte[] Decode(string input) => Decode(input, true, LetterCasing.Upper);
 
-        public override string Encode(byte[] bytes) => Encode(bytes, AlphabetRfc4648Upper, true);
+        public override string Encode(byte[] bytes) => Encode(bytes, true);
     }
 }
