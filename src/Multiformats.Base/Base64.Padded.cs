@@ -1,17 +1,15 @@
-﻿using System.Linq;
-
-namespace Multiformats.Base
+﻿namespace Multiformats.Base
 {
     internal class Base64Padded : Base64
     {
-        internal static readonly string ValidChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+        private static readonly char[] _alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".ToCharArray();
 
         protected override string Name => "base64pad";
         protected override char Prefix => 'M';
-        protected override bool IsValid(string value) => value.All(c => ValidChars.Contains(c));
+        protected override char[] Alphabet => _alphabet;
 
-        internal override byte[] DecodeCore(string input) => Decode(input, false, true);
+        public override byte[] Decode(string input) => Decode(input, false, true);
 
-        internal override string EncodeCore(byte[] bytes) => Encode(bytes, false, true);
+        public override string Encode(byte[] bytes) => Encode(bytes, false, true);
     }
 }

@@ -6,7 +6,7 @@ namespace Multiformats.Base
 {
     internal abstract class Base58 : Multibase
     {
-        protected string Encode(byte[] b, string alphabet)
+        protected string Encode(byte[] b, char[] alphabet)
         {
             return new string(
                 b.TakeWhile(c => c == 0)
@@ -15,7 +15,7 @@ namespace Multiformats.Base
                 .ToArray());
         }
 
-        private static IEnumerable<char> ParseBigInt(BigInteger intData, string alphabet)
+        private static IEnumerable<char> ParseBigInt(BigInteger intData, char[] alphabet)
         {
             var len = alphabet.Length;
             while (intData > 0)
@@ -50,9 +50,9 @@ namespace Multiformats.Base
             return map;
         }
 
-        protected byte[] Decode(string b, string alphabet)
+        protected byte[] Decode(string b, char[] alphabet)
         {
-            var decodeMap = GetDecodeMap(alphabet);
+            var decodeMap = GetDecodeMap(new string(alphabet));
             var len = alphabet.Length;
 
             return b.TakeWhile(c => c == alphabet[0])

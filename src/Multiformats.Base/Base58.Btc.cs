@@ -1,17 +1,15 @@
-using System.Linq;
-
 namespace Multiformats.Base
 {
     internal class Base58Btc : Base58
     {
-        internal static readonly string ValidChars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+        private static readonly char[] _alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".ToCharArray();
 
         protected override string Name => "base58btc";
         protected override char Prefix => 'z';
-        protected override bool IsValid(string value) => value.All(c => ValidChars.Contains(c));
+        protected override char[] Alphabet => _alphabet;
 
-        internal override byte[] DecodeCore(string input) => Decode(input, ValidChars);
+        public override byte[] Decode(string input) => Decode(input, _alphabet);
 
-        internal override string EncodeCore(byte[] bytes) => Encode(bytes, ValidChars);
+        public override string Encode(byte[] bytes) => Encode(bytes, _alphabet);
     }
 }

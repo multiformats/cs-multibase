@@ -1,15 +1,15 @@
-﻿using System.Linq;
-
-namespace Multiformats.Base
+﻿namespace Multiformats.Base
 {
     internal class Base32HexLower : Base32
     {
+        private static readonly char[] _alphabet = "0123456789abcdefghijklmnopqrstuv".ToCharArray();
+
         protected override string Name => "base32hex";
         protected override char Prefix => 'v';
-        protected override bool IsValid(string value) => value.All(c => AlphabetRfc4648HexLower.Contains(c));
+        protected override char[] Alphabet => _alphabet;
 
-        internal override byte[] DecodeCore(string input) => Decode(input, AlphabetRfc4648HexLower, false, LetterCasing.Lower);
+        public override byte[] Decode(string input) => Decode(input, false, LetterCasing.Lower);
 
-        internal override string EncodeCore(byte[] bytes) => Encode(bytes, AlphabetRfc4648HexLower, false);
+        public override string Encode(byte[] bytes) => Encode(bytes, false);
     }
 }

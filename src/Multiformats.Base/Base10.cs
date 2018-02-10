@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 
@@ -6,16 +7,16 @@ namespace Multiformats.Base
 {
     internal class Base10 : Multibase
     {
-        internal static readonly string ValidChars = "0123456789";
+        private static readonly char[] _alphabet = "0123456789".ToCharArray();
 
         protected override string Name => "base10";
         protected override char Prefix => '9';
-        protected override bool IsValid(string value) => value.All(c => ValidChars.Contains(c));
+        protected override char[] Alphabet => _alphabet;
 
-        internal override byte[] DecodeCore(string input)
+        public override byte[] Decode(string input)
         {
-            var big = BigInteger.Parse(new string(input.SkipWhile(c => c == '0').ToArray()));
-            return LeadingZeros(input).Concat(big.ToByteArray().Reverse()).ToArray();
+            var big = BigInteger.Parse("00" + input, NumberStyles.None);
+            return LeadingZeros(input).Concat(big.ToByteArray().Reverse().SkipWhile(b => b == 0)).ToArray();
         }
 
         private static IEnumerable<byte> LeadingZeros(IEnumerable<char> input)
@@ -28,9 +29,9 @@ namespace Multiformats.Base
             return Enumerable.Range(0, input.TakeWhile(b => b == 0x00).Count()).Select(_ => '0');
         }
 
-        internal override string EncodeCore(byte[] bytes)
+        public override string Encode(byte[] bytes)
         {
-            var big = new BigInteger(bytes.SkipWhile(b => b == 0x00).Reverse().ToArray());
+            var big = new BigInteger(bytes.Reverse().Concat(new byte[]{0x00}).ToArray());
             return new string(LeadingNulls(bytes).ToArray()) + big.ToString();
         }
     }

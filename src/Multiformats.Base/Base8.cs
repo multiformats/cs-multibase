@@ -6,17 +6,17 @@ namespace Multiformats.Base
 {
     internal class Base8 : Multibase
     {
-        internal static readonly string ValidChars = "01234567";
+        private static readonly char[] _alphabet = {'0', '1', '2', '3', '4', '5', '6', '7'};
 
         protected override string Name => "base8";
         protected override char Prefix => '7';
-        protected override bool IsValid(string value) => value.All(c => ValidChars.Contains(c));
+        protected override char[] Alphabet => _alphabet;
 
         private static byte[] FromOct(byte o) => new[] { (byte)(o >> 2), (byte)((o >> 1) & 1), (byte)(o & 1) };
         private static byte ToNum8(char c) => Convert.ToByte($"{c}", 8);
         private static char FromBit(byte b) => b == 0 ? '0' : '1';
-        
-        internal override byte[] DecodeCore(string input)
+
+        public override byte[] Decode(string input)
         {
             var base2 = _bases[MultibaseEncoding.Base2];
 
@@ -32,7 +32,7 @@ namespace Multiformats.Base
             else if (modlen == 6)
                 binstr = new string(bin.Skip(2).ToArray());
 
-            return base2.DecodeCore(binstr);
+            return base2.Decode(binstr);
         }
 
         private static byte ToBit(char c) => c == '0' ? (byte)0 : (byte)1;
@@ -62,10 +62,10 @@ namespace Multiformats.Base
             return result;
         }
 
-        internal override string EncodeCore(byte[] bytes)
+        public override string Encode(byte[] bytes)
         {
             var base2 = _bases[MultibaseEncoding.Base2];
-            var encoded = base2.EncodeCore(bytes);
+            var encoded = base2.Encode(bytes);
             var modlen = encoded.Length % 3;
             var prepad = new string('0', modlen == 0 ? 0 : 3 - modlen);
 
