@@ -21,7 +21,6 @@ As stated in the specs, multibase encoded strings are prefixed with an identifie
 - [Maintainers](#maintainers)
 - [Contribute](#contribute)
 - [License](#license)
-- [Third parties](#third-parties)
 
 ## Install
 
