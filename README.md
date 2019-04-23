@@ -21,7 +21,6 @@ As stated in the specs, multibase encoded strings are prefixed with an identifie
 - [Maintainers](#maintainers)
 - [Contribute](#contribute)
 - [License](#license)
-- [Third parties](#third-parties)
 
 ## Install
 
@@ -31,10 +30,12 @@ As stated in the specs, multibase encoded strings are prefixed with an identifie
 
 ## Usage
 ``` csharp
-var encoded = Multibase.Encode(MultibaseEncoding.Base32Lower, "hello world");
+using Multiformats.Base;
+using System.Text;
+
+string encoded = Multibase.Encode(MultibaseEncoding.Base32Lower, Encoding.UTF8.GetBytes("hello world"));
 // bnbswy3dpeb3w64tmmq
-var decoded = Multibase.Decode(encoded, out MultibaseEncoding encoding);
-// "hello world" (encoding: MultibaseEncoding.Base32Lower)
+byte[] decoded = Multibase.Decode(encoded, out MultibaseEncoding encoding);
 ```
 
 ## Supported base encodings
