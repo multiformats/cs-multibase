@@ -1,20 +1,8 @@
 language: csharp
 sudo: required
-dist: trusty
-env:
-  - CLI_VERSION=latest
-
-addons:
-  apt:
-    packages:
-    - gettext
-    - libcurl4-openssl-dev
-    - libicu-dev
-    - libssl-dev
-    - libunwind8
-    - zlib1g
-mono:
-  - latest
+dist: xenial
+mono: latest
+dotnet: 2.2.300
 os:
   - linux
   - osx
@@ -33,21 +21,17 @@ cache:
   directories:
   - ./packages
   - /.dotnetcli
+  - $HOME/.nuget/packages
   - $HOME/Library/Caches/Homebrew
 
 before_install:
   - if test "$TRAVIS_OS_NAME" == "osx"; then brew update; brew install openssl; ln -s /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib /usr/local/lib/; ln -s /usr/local/opt/openssl/lib/libssl.1.0.0.dylib /usr/local/lib/; fi
 
 install:
-  - export DOTNET_INSTALL_DIR="$PWD/.dotnetcli"
-  - export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true
-  - export DOTNET_CLI_TELEMETRY_OPTOUT=1
-  - curl -sSL https://raw.githubusercontent.com/dotnet/cli/rel/1.0.1/scripts/obtain/dotnet-install.sh | bash /dev/stdin --version "$CLI_VERSION" --install-dir "$DOTNET_INSTALL_DIR"
   - git config --global core.autocrlf input
   - git submodule update --init --recursive
-  - chmod +x ./build.sh
-  - export PATH="$DOTNET_INSTALL_DIR:$PATH"
 
 script:
-  - ./build.sh
-
+  - dotnet build -c Release
+  - dotnet test -c Release -f netcoreapp2.2 --no-build --no-restore --blame
+  - mono $HOME/.nuget/packages/xunit.runner.console/*/tools/net452/xunit.console.exe ./test/Multiformats.Base.Tests/bin/Release/net461/Multiformats.Base.Tests.dll
