@@ -7,9 +7,5 @@ namespace Multiformats.Base
         protected override string Name => "base58flickr";
         protected override char Prefix => 'Z';
         protected override char[] Alphabet => _alphabet;
-
-        public override byte[] Decode(string input) => Decode(input, _alphabet);
-
-        public override string Encode(byte[] bytes) => Encode(bytes, _alphabet);
     }
 }

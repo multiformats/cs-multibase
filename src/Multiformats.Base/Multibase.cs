@@ -6,43 +6,39 @@ namespace Multiformats.Base
 {
     public abstract class Multibase
     {
-        protected static readonly Dictionary<MultibaseEncoding, Multibase> _bases;
-
-        static Multibase()
+        protected static readonly Dictionary<MultibaseEncoding, Multibase> _bases = new Dictionary<MultibaseEncoding, Multibase>
         {
-            _bases = new Dictionary<MultibaseEncoding, Multibase>
-            {
-                {MultibaseEncoding.Identity, new Identity()},
-                {MultibaseEncoding.Base2, new Base2()},
-                {MultibaseEncoding.Base8, new Base8()},
-                {MultibaseEncoding.Base10, new Base10()},
-                {MultibaseEncoding.Base16Lower, new Base16Lower()},
-                {MultibaseEncoding.Base16Upper, new Base16Upper()},
-                {MultibaseEncoding.Base32Lower, new Base32Lower()},
-                {MultibaseEncoding.Base32Upper, new Base32Upper()},
-                {MultibaseEncoding.Base32PaddedLower, new Base32PaddedLower()},
-                {MultibaseEncoding.Base32PaddedUpper, new Base32PaddedUpper()},
-                {MultibaseEncoding.Base32HexLower, new Base32HexLower()},
-                {MultibaseEncoding.Base32HexUpper, new Base32HexUpper()},
-                {MultibaseEncoding.Base32HexPaddedLower, new Base32HexPaddedLower()},
-                {MultibaseEncoding.Base32HexPaddedUpper, new Base32HexPaddedUpper()},
-                {MultibaseEncoding.Base32Z, new Base32Z()},
-                {MultibaseEncoding.Base58Btc, new Base58Btc()},
-                {MultibaseEncoding.Base58Flickr, new Base58Flickr()},
-                {MultibaseEncoding.Base64, new Base64Normal()},
-                {MultibaseEncoding.Base64Padded, new Base64Padded()},
-                {MultibaseEncoding.Base64Url, new Base64Url()},
-                {MultibaseEncoding.Base64UrlPadded, new Base64UrlPadded()},
-            };
-        }
+            {MultibaseEncoding.Identity, new Identity()},
+            {MultibaseEncoding.Base2, new Base2()},
+            {MultibaseEncoding.Base8, new Base8()},
+            {MultibaseEncoding.Base10, new Base10()},
+            {MultibaseEncoding.Base16Lower, new Base16Lower()},
+            {MultibaseEncoding.Base16Upper, new Base16Upper()},
+            {MultibaseEncoding.Base32Lower, new Base32Lower()},
+            {MultibaseEncoding.Base32Upper, new Base32Upper()},
+            {MultibaseEncoding.Base32PaddedLower, new Base32PaddedLower()},
+            {MultibaseEncoding.Base32PaddedUpper, new Base32PaddedUpper()},
+            {MultibaseEncoding.Base32HexLower, new Base32HexLower()},
+            {MultibaseEncoding.Base32HexUpper, new Base32HexUpper()},
+            {MultibaseEncoding.Base32HexPaddedLower, new Base32HexPaddedLower()},
+            {MultibaseEncoding.Base32HexPaddedUpper, new Base32HexPaddedUpper()},
+            {MultibaseEncoding.Base32Z, new Base32Z()},
+            {MultibaseEncoding.Base58Btc, new Base58Btc()},
+            {MultibaseEncoding.Base58Flickr, new Base58Flickr()},
+            {MultibaseEncoding.Base64, new Base64Normal()},
+            {MultibaseEncoding.Base64Padded, new Base64Padded()},
+            {MultibaseEncoding.Base64Url, new Base64Url()},
+            {MultibaseEncoding.Base64UrlPadded, new Base64UrlPadded()},
+        };
 
-        public static Multibase Base2 => _bases[MultibaseEncoding.Base2];
-        public static Multibase Base8 => _bases[MultibaseEncoding.Base8];
-        public static Multibase Base10 => _bases[MultibaseEncoding.Base10];
-        public static Multibase Base16 => _bases[MultibaseEncoding.Base16Lower];
-        public static Multibase Base32 => _bases[MultibaseEncoding.Base32Lower];
-        public static Multibase Base58 => _bases[MultibaseEncoding.Base58Btc];
-        public static Multibase Base64 => _bases[MultibaseEncoding.Base64];
+        public static Multibase Base2 { get; } = _bases[MultibaseEncoding.Base2];
+        public static Multibase Base8 { get; } = _bases[MultibaseEncoding.Base8];
+        public static Multibase Base10 { get; } = _bases[MultibaseEncoding.Base10];
+        public static Multibase Base16 { get; } = _bases[MultibaseEncoding.Base16Lower];
+        public static Multibase Base32 { get; } = _bases[MultibaseEncoding.Base32Lower];
+        public static Multibase Base58 { get; } = _bases[MultibaseEncoding.Base58Btc];
+        public static Multibase Base58_V2 { get; } = new Base58BtcV2();
+        public static Multibase Base64 { get; } = _bases[MultibaseEncoding.Base64];
 
         protected abstract string Name { get; }
         protected abstract char Prefix { get; }

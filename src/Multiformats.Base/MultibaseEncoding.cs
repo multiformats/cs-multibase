@@ -18,6 +18,7 @@ namespace Multiformats.Base
         Base32HexPaddedLower,
         Base32HexPaddedUpper,
         Base58Btc,
+        Base58BtcV2,
         Base58Flickr,
         Base64,
         Base64Padded,

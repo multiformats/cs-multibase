@@ -7,9 +7,12 @@ namespace Multiformats.Base
         protected override string Name => "base58btc";
         protected override char Prefix => 'z';
         protected override char[] Alphabet => _alphabet;
+    }
 
-        public override byte[] Decode(string input) => Decode(input, _alphabet);
+    internal class Base58BtcV2 : Base58Btc
+    {
+        protected override string Name => "base58btcv2";
 
-        public override string Encode(byte[] bytes) => Encode(bytes, _alphabet);
+        public override byte[] Decode(string input) => base.DecodeWithSpan(input, Alphabet);
     }
 }
