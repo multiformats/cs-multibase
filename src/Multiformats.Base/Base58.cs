@@ -82,14 +82,19 @@ namespace Multiformats.Base
             var index = 0;
 
             var alphabet0 = alphabet[0];
-            foreach (var _ in b.TakeWhile(c => c == alphabet0))
-            {
-                result[index++] = 0;
-            }
-
             BigInteger bigInt = 0;
+            var isConsecutive = true;
             foreach (var c in b)
             {
+                if (isConsecutive && c == alphabet0)
+                {
+                    result[index++] = 0;
+                }
+                else
+                {
+                    isConsecutive = false;
+                }
+
                 bigInt = bigInt * len + decodeMap[c];
             }
 
