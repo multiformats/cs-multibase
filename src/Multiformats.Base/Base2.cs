@@ -11,9 +11,9 @@ namespace Multiformats.Base
         protected override char[] Alphabet => _alphabet;
 
         public override byte[] Decode(string input) => Decode(input.AsSpan()).ToArray();
-        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<char> input)
+        public override ReadOnlyMemory<byte> Decode(ReadOnlySpan<char> input)
         {
-            Span<byte> result = new byte[input.Length / 8];
+            Span<byte> result = stackalloc byte[input.Length / 8];
             for (var index = 0; index < input.Length / 8; ++index)
             {
                 for (var i = 0; i < 8; ++i)
@@ -21,13 +21,13 @@ namespace Multiformats.Base
                         result[index] |= (byte)(1 << (7 - i));
             }
 
-            return result;
+            return result.ToArray();
         }
 
         public override string Encode(byte[] bytes) => Encode(bytes.AsSpan()).ToString();
-        public override ReadOnlySpan<char> Encode(ReadOnlySpan<byte> bytes)
+        public override ReadOnlyMemory<char> Encode(ReadOnlySpan<byte> bytes)
         {
-            Span<char> result = new char[bytes.Length * 8];
+            Span<char> result = stackalloc char[bytes.Length * 8];
             for (var index = 0; index < bytes.Length; ++index)
             {
                 for (var i = 0; i < 8; ++i)
@@ -35,7 +35,7 @@ namespace Multiformats.Base
                     result[(index * 8) + (7 - i)] = (bytes[index] & (1 << i)) != 0 ? '1' : '0';
                 }
             }
-            return result;
+            return result.ToArray();
         }
     }
 }

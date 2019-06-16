@@ -14,7 +14,7 @@ namespace Multiformats.Base
 
         public override byte[] Decode(string input) => Decode(input.AsSpan()).ToArray();
 
-        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<char> input)
+        public override ReadOnlyMemory<byte> Decode(ReadOnlySpan<char> input)
         {
             Span<char> zeroLeaded = stackalloc char[input.Length + 2];
             zeroLeaded[0] = '0';
@@ -27,12 +27,11 @@ namespace Multiformats.Base
             bigBytes.Reverse();
             var bigLeadingZeros = LeadingZeros(bigBytes);
 
-            Span<byte> result = new byte[leadingZeros + (bigBytes.Length - bigLeadingZeros)];
+            Span<byte> result = stackalloc byte[leadingZeros + (bigBytes.Length - bigLeadingZeros)];
             result.Slice(0, leadingZeros).Fill(0);
             bigBytes.Slice(bigLeadingZeros).CopyTo(result.Slice(leadingZeros));
 
-            return result;
-
+            return result.ToArray();
         }
 
         private static int LeadingZeros(ReadOnlySpan<byte> input)
@@ -59,7 +58,7 @@ namespace Multiformats.Base
 
         public override string Encode(byte[] bytes) => Encode(bytes.AsSpan()).ToString();
 
-        public override ReadOnlySpan<char> Encode(ReadOnlySpan<byte> bytes)
+        public override ReadOnlyMemory<char> Encode(ReadOnlySpan<byte> bytes)
         {
             Span<byte> bigBytes = stackalloc byte[bytes.Length + 1];
             bytes.CopyTo(bigBytes.Slice(1));
@@ -68,11 +67,11 @@ namespace Multiformats.Base
             var big = new BigInteger(bigBytes.ToArray()).ToString().AsSpan();
             
             var leadingZeros = LeadingZeros(bytes);
-            Span<char> result = new char[leadingZeros + big.Length];
+            Span<char> result = stackalloc char[leadingZeros + big.Length];
             result.Slice(0, leadingZeros).Fill('0');
             big.CopyTo(result.Slice(leadingZeros));
 
-            return result;
+            return result.ToArray();
 
         }
     }

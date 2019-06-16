@@ -12,9 +12,9 @@ namespace Multiformats.Base
 
         public override byte[] Decode(string input) => Decode(input.AsSpan()).ToArray();
 
-        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<char> input)
+        public override ReadOnlyMemory<byte> Decode(ReadOnlySpan<char> input)
         {
-            Span<char> bin = new char[input.Length * 3];
+            Span<char> bin = stackalloc char[input.Length * 3];
             for (var i = 0; i < bin.Length; i += 3)
             {
                 var b = Convert.ToByte($"{input[i / 3]}", 8);
@@ -30,23 +30,23 @@ namespace Multiformats.Base
 
         public override string Encode(byte[] bytes) => Encode(bytes.AsSpan()).ToString();
 
-        public override ReadOnlySpan<char> Encode(ReadOnlySpan<byte> bytes)
+        public override ReadOnlyMemory<char> Encode(ReadOnlySpan<byte> bytes)
         {
             var encoded = _bases[MultibaseEncoding.Base2].Encode(bytes);
             var modlen = encoded.Length % 3;
             var prepad = modlen == 0 ? 0 : 3 - modlen;
 
-            Span<char> result = new char[(prepad + encoded.Length) / 3];
+            Span<char> result = stackalloc char[(prepad + encoded.Length) / 3];
             for (var i = 0; i < prepad + encoded.Length; i += 3)
             {
                 result[i / 3] = Convert.ToString((byte)(
-                    ((byte)(i < prepad || encoded[i - prepad] == '0' ? 0 : 1) << 2) |
-                    ((byte)(i + 1 < prepad || encoded[(i - prepad) + 1] == '0' ? 0 : 1) << 1) |
-                    (byte)(i + 2 < prepad || encoded[(i - prepad) + 2] == '0' ? 0 : 1)
+                    ((byte)(i < prepad || encoded.Span[i - prepad] == '0' ? 0 : 1) << 2) |
+                    ((byte)(i + 1 < prepad || encoded.Span[(i - prepad) + 1] == '0' ? 0 : 1) << 1) |
+                    (byte)(i + 2 < prepad || encoded.Span[(i - prepad) + 2] == '0' ? 0 : 1)
                 ), 8)[0];
             }
 
-            return result;
+            return result.ToArray();
         }
     }
 }

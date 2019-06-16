@@ -11,8 +11,8 @@ namespace Multiformats.Base
         protected override char[] Alphabet => _alphabet;
 
         public override byte[] Decode(string input) => Decode(input.AsSpan(), false, false).ToArray();
-        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<char> input) => Decode(input, false, false);
+        public override ReadOnlyMemory<byte> Decode(ReadOnlySpan<char> input) => Decode(input, false, false);
         public override string Encode(byte[] bytes) => Encode(bytes.AsSpan(), false, false).ToString();
-        public override ReadOnlySpan<char> Encode(ReadOnlySpan<byte> bytes) => Encode(bytes, false, false);
+        public override ReadOnlyMemory<char> Encode(ReadOnlySpan<byte> bytes) => Encode(bytes, false, false);
     }
 }

@@ -6,7 +6,7 @@ namespace Multiformats.Base
 {
     internal abstract class Base32 : Multibase
     {
-        protected ReadOnlySpan<byte> Decode(ReadOnlySpan<char> input, bool padding, LetterCasing casing)
+        protected ReadOnlyMemory<byte> Decode(ReadOnlySpan<char> input, bool padding, LetterCasing casing)
         {
             if (padding)
                 input = input.TrimEnd('=');
@@ -31,7 +31,7 @@ namespace Multiformats.Base
             var bits = 0;
             var value = 0;
             var index = 0;
-            Span<byte> output = new byte[(data.Length * 5 / 8) | 0];
+            Span<byte> output = stackalloc byte[(data.Length * 5 / 8) | 0];
 
             for (var i = 0; i < data.Length; ++i)
             {
@@ -45,15 +45,15 @@ namespace Multiformats.Base
                 }
             }
 
-            return output;
+            return output.ToArray();
         }
 
-        protected ReadOnlySpan<char> Encode(ReadOnlySpan<byte> bytes, bool padding)
+        protected ReadOnlyMemory<char> Encode(ReadOnlySpan<byte> bytes, bool padding)
         {
             int bits = 0;
             int value = 0;
             int offset = 0;
-            Span<char> result = new char[bytes.Length * 3];
+            Span<char> result = stackalloc char[bytes.Length * 3];
 
             for (var i = 0; i < bytes.Length; ++i)
             {
@@ -75,7 +75,7 @@ namespace Multiformats.Base
                 result[offset++] = '=';
             }
 
-            return result.Slice(0, offset);
+            return result.Slice(0, offset).ToArray();
         }
     }
 }

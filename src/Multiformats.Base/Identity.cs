@@ -10,21 +10,21 @@ namespace Multiformats.Base
 
         protected override bool IsValid(string value) => true;
         public override byte[] Decode(string input) => Decode(input.AsSpan()).ToArray();
-        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<char> input)
+        public override ReadOnlyMemory<byte> Decode(ReadOnlySpan<char> input)
         {
-            Span<byte> result = new byte[input.Length];
+            Span<byte> result = stackalloc byte[input.Length];
             for (var i = 0; i < input.Length; ++i)
                 result[i] = Convert.ToByte(input[i]);
-            return result;
+            return result.ToArray();
         }
 
         public override string Encode(byte[] bytes) => Encode(bytes.AsSpan()).ToString();
-        public override ReadOnlySpan<char> Encode(ReadOnlySpan<byte> bytes)
+        public override ReadOnlyMemory<char> Encode(ReadOnlySpan<byte> bytes)
         {
-            Span<char> result = new char[bytes.Length];
+            Span<char> result = stackalloc char[bytes.Length];
             for (var i = 0; i < bytes.Length; ++i)
                 result[i] = Convert.ToChar(bytes[i]);
-            return result;
+            return result.ToArray();
         }
     }
 }

@@ -36,6 +36,7 @@ namespace Multiformats.Base
             };
         }
 
+        public static Multibase Identity => _bases[MultibaseEncoding.Identity];
         public static Multibase Base2 => _bases[MultibaseEncoding.Base2];
         public static Multibase Base8 => _bases[MultibaseEncoding.Base8];
         public static Multibase Base10 => _bases[MultibaseEncoding.Base10];
@@ -50,9 +51,9 @@ namespace Multiformats.Base
         protected virtual bool IsValid(string value) => value.Distinct().All(c => Array.IndexOf(Alphabet, c) > -1);
 
         public abstract byte[] Decode(string input);
-        public abstract ReadOnlySpan<byte> Decode(ReadOnlySpan<char> input);
+        public abstract ReadOnlyMemory<byte> Decode(ReadOnlySpan<char> input);
         public abstract string Encode(byte[] bytes);
-        public abstract ReadOnlySpan<char> Encode(ReadOnlySpan<byte> bytes);
+        public abstract ReadOnlyMemory<char> Encode(ReadOnlySpan<byte> bytes);
 
         /// <summary>
         /// Encode a byte array to multibase given encoding.
