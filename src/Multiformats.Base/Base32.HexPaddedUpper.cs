@@ -1,4 +1,6 @@
-﻿namespace Multiformats.Base
+﻿using System;
+
+namespace Multiformats.Base
 {
     internal class Base32HexPaddedUpper : Base32
     {
@@ -8,8 +10,9 @@
         protected override char Prefix => 'T';
         protected override char[] Alphabet => _alphabet;
 
-        public override byte[] Decode(string input) => Decode(input, true, LetterCasing.Upper);
-
-        public override string Encode(byte[] bytes) => Encode(bytes, true);
+        public override byte[] Decode(string input) => Decode(input.AsSpan(), true, LetterCasing.Upper).ToArray();
+        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<char> input) => Decode(input, true, LetterCasing.Upper);
+        public override string Encode(byte[] bytes) => Encode(bytes.AsSpan(), true).ToString();
+        public override ReadOnlySpan<char> Encode(ReadOnlySpan<byte> bytes) => Encode(bytes, true);
     }
 }

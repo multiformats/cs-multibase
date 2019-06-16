@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace Multiformats.Base
 {
@@ -10,7 +9,22 @@ namespace Multiformats.Base
         protected override char[] Alphabet => Array.Empty<char>();
 
         protected override bool IsValid(string value) => true;
-        public override byte[] Decode(string input) => input.Select(Convert.ToByte).ToArray();
-        public override string Encode(byte[] bytes) => new string(bytes.Select(Convert.ToChar).ToArray());
+        public override byte[] Decode(string input) => Decode(input.AsSpan()).ToArray();
+        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<char> input)
+        {
+            Span<byte> result = new byte[input.Length];
+            for (var i = 0; i < input.Length; ++i)
+                result[i] = Convert.ToByte(input[i]);
+            return result;
+        }
+
+        public override string Encode(byte[] bytes) => Encode(bytes.AsSpan()).ToString();
+        public override ReadOnlySpan<char> Encode(ReadOnlySpan<byte> bytes)
+        {
+            Span<char> result = new char[bytes.Length];
+            for (var i = 0; i < bytes.Length; ++i)
+                result[i] = Convert.ToChar(bytes[i]);
+            return result;
+        }
     }
 }

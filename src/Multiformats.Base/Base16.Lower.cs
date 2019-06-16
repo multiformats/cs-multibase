@@ -1,4 +1,6 @@
-﻿namespace Multiformats.Base
+﻿using System;
+
+namespace Multiformats.Base
 {
     internal class Base16Lower : Base16
     {
@@ -8,8 +10,9 @@
         protected override char Prefix => 'f';
         protected override char[] Alphabet => _alphabet;
 
-        public override byte[] Decode(string input) => Decode(input, LetterCasing.Lower);
-
-        public override string Encode(byte[] bytes) => Encode(bytes, LetterCasing.Lower);
+        public override byte[] Decode(string input) => Decode(input.AsSpan(), LetterCasing.Lower).ToArray();
+        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<char> input) => Decode(input, LetterCasing.Lower);
+        public override string Encode(byte[] bytes) => Encode(bytes.AsSpan(), LetterCasing.Lower).ToString();
+        public override ReadOnlySpan<char> Encode(ReadOnlySpan<byte> bytes) => Encode(bytes, LetterCasing.Lower);
     }
 }

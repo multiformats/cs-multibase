@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Multiformats.Base
 {
@@ -12,64 +10,43 @@ namespace Multiformats.Base
         protected override char Prefix => '7';
         protected override char[] Alphabet => _alphabet;
 
-        private static byte[] FromOct(byte o) => new[] { (byte)(o >> 2), (byte)((o >> 1) & 1), (byte)(o & 1) };
-        private static byte ToNum8(char c) => Convert.ToByte($"{c}", 8);
-        private static char FromBit(byte b) => b == 0 ? '0' : '1';
+        public override byte[] Decode(string input) => Decode(input.AsSpan()).ToArray();
 
-        public override byte[] Decode(string input)
+        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<char> input)
         {
-            var base2 = _bases[MultibaseEncoding.Base2];
-
-            var bin = input.Select(ToNum8).SelectMany(FromOct).Select(FromBit);
+            Span<char> bin = new char[input.Length * 3];
+            for (var i = 0; i < bin.Length; i += 3)
+            {
+                var b = Convert.ToByte($"{input[i / 3]}", 8);
+                bin[i] = ((byte)(b >> 2)) == 0 ? '0' : '1';
+                bin[i + 1] = ((byte)((b >> 1) & 1)) == 0 ? '0' : '1';
+                bin[i + 2] = ((byte)(b & 1)) == 0 ? '0' : '1';
+            }
 
             var modlen = input.Length % 8;
 
-            var binstr = "";
-            if (modlen == 0)
-                binstr = new string(bin.ToArray());
-            else if (modlen == 3)
-                binstr = new string(bin.Skip(1).ToArray());
-            else if (modlen == 6)
-                binstr = new string(bin.Skip(2).ToArray());
-
-            return base2.Decode(binstr);
+            return _bases[MultibaseEncoding.Base2].Decode(bin.Slice(modlen == 6 ? 2 : modlen == 3 ? 1 : 0));
         }
 
-        private static byte ToBit(char c) => c == '0' ? (byte)0 : (byte)1;
-        private static byte ToOct(IEnumerable<byte> b)
-        {
-            var bin = b.ToArray();
+        public override string Encode(byte[] bytes) => Encode(bytes.AsSpan()).ToString();
 
-            return (byte)((bin[0] << 2) | (bin[1] << 1) | bin[2]);
-        }
-        private static char FromNum8(byte b) => Convert.ToString(b, 8).First();
-
-        private static IEnumerable<byte> BinToOct(IEnumerable<byte> b)
+        public override ReadOnlySpan<char> Encode(ReadOnlySpan<byte> bytes)
         {
-            var result = new List<byte>();
-            var batch = new List<byte>();
-            foreach (var x in b)
+            var encoded = _bases[MultibaseEncoding.Base2].Encode(bytes);
+            var modlen = encoded.Length % 3;
+            var prepad = modlen == 0 ? 0 : 3 - modlen;
+
+            Span<char> result = new char[(prepad + encoded.Length) / 3];
+            for (var i = 0; i < prepad + encoded.Length; i += 3)
             {
-                batch.Add(x);
-
-                if (batch.Count == 3)
-                {
-                    result.Add(ToOct(batch));
-                    batch.Clear();
-                }
+                result[i / 3] = Convert.ToString((byte)(
+                    ((byte)(i < prepad || encoded[i - prepad] == '0' ? 0 : 1) << 2) |
+                    ((byte)(i + 1 < prepad || encoded[(i - prepad) + 1] == '0' ? 0 : 1) << 1) |
+                    (byte)(i + 2 < prepad || encoded[(i - prepad) + 2] == '0' ? 0 : 1)
+                ), 8)[0];
             }
 
             return result;
-        }
-
-        public override string Encode(byte[] bytes)
-        {
-            var base2 = _bases[MultibaseEncoding.Base2];
-            var encoded = base2.Encode(bytes);
-            var modlen = encoded.Length % 3;
-            var prepad = new string('0', modlen == 0 ? 0 : 3 - modlen);
-
-            return new string(BinToOct((prepad + encoded).Select(ToBit)).Select(FromNum8).ToArray());
         }
     }
 }

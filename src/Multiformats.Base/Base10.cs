@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Globalization;
-using System.Linq;
 using System.Numerics;
 
 namespace Multiformats.Base
@@ -13,26 +12,68 @@ namespace Multiformats.Base
         protected override char Prefix => '9';
         protected override char[] Alphabet => _alphabet;
 
-        public override byte[] Decode(string input)
+        public override byte[] Decode(string input) => Decode(input.AsSpan()).ToArray();
+
+        public override ReadOnlySpan<byte> Decode(ReadOnlySpan<char> input)
         {
-            var big = BigInteger.Parse("00" + input, NumberStyles.None);
-            return LeadingZeros(input).Concat(big.ToByteArray().Reverse().SkipWhile(b => b == 0)).ToArray();
+            Span<char> zeroLeaded = stackalloc char[input.Length + 2];
+            zeroLeaded[0] = '0';
+            zeroLeaded[1] = '0';
+            input.CopyTo(zeroLeaded.Slice(2));
+            var big = BigInteger.Parse(zeroLeaded.ToString(), NumberStyles.None);
+
+            var leadingZeros = LeadingZeros(input);
+            var bigBytes = big.ToByteArray().AsSpan();
+            bigBytes.Reverse();
+            var bigLeadingZeros = LeadingZeros(bigBytes);
+
+            Span<byte> result = new byte[leadingZeros + (bigBytes.Length - bigLeadingZeros)];
+            result.Slice(0, leadingZeros).Fill(0);
+            bigBytes.Slice(bigLeadingZeros).CopyTo(result.Slice(leadingZeros));
+
+            return result;
+
         }
 
-        private static IEnumerable<byte> LeadingZeros(IEnumerable<char> input)
+        private static int LeadingZeros(ReadOnlySpan<byte> input)
         {
-            return Enumerable.Range(0, input.TakeWhile(b => b == '0').Count()).Select(_ => (byte)0x00);
+            var i = 0;
+            for (i = 0; i < input.Length; ++i)
+            {
+                if (input[i] != 0)
+                    break;
+            }
+            return i;
         }
 
-        private static IEnumerable<char> LeadingNulls(IEnumerable<byte> input)
+        private static int LeadingZeros(ReadOnlySpan<char> input)
         {
-            return Enumerable.Range(0, input.TakeWhile(b => b == 0x00).Count()).Select(_ => '0');
+            var i = 0;
+            for (i = 0; i < input.Length; ++i)
+            {
+                if (input[i] != '0')
+                    break;
+            }
+            return i;
         }
 
-        public override string Encode(byte[] bytes)
+        public override string Encode(byte[] bytes) => Encode(bytes.AsSpan()).ToString();
+
+        public override ReadOnlySpan<char> Encode(ReadOnlySpan<byte> bytes)
         {
-            var big = new BigInteger(bytes.Reverse().Concat(new byte[]{0x00}).ToArray());
-            return new string(LeadingNulls(bytes).ToArray()) + big.ToString();
+            Span<byte> bigBytes = stackalloc byte[bytes.Length + 1];
+            bytes.CopyTo(bigBytes.Slice(1));
+            bigBytes[0] = 0x00;
+            bigBytes.Reverse();
+            var big = new BigInteger(bigBytes.ToArray()).ToString().AsSpan();
+            
+            var leadingZeros = LeadingZeros(bytes);
+            Span<char> result = new char[leadingZeros + big.Length];
+            result.Slice(0, leadingZeros).Fill('0');
+            big.CopyTo(result.Slice(leadingZeros));
+
+            return result;
+
         }
     }
 }

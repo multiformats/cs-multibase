@@ -50,7 +50,9 @@ namespace Multiformats.Base
         protected virtual bool IsValid(string value) => value.Distinct().All(c => Array.IndexOf(Alphabet, c) > -1);
 
         public abstract byte[] Decode(string input);
+        public abstract ReadOnlySpan<byte> Decode(ReadOnlySpan<char> input);
         public abstract string Encode(byte[] bytes);
+        public abstract ReadOnlySpan<char> Encode(ReadOnlySpan<byte> bytes);
 
         /// <summary>
         /// Encode a byte array to multibase given encoding.

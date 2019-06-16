@@ -7,7 +7,7 @@
     <VersionPrefix>2.0.1</VersionPrefix>
     <Authors>tabrath</Authors>
     <TargetFrameworks>net461;netstandard1.6;netstandard2.0;</TargetFrameworks>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
     <AssemblyName>Multiformats.Base</AssemblyName>
     <PackageId>Multiformats.Base</PackageId>
     <PackageTags>multiformats multibase base2 base8 base10 base16 base32 base58 base64 z-base32</PackageTags>
@@ -26,6 +26,7 @@
     <Optimize>false</Optimize>
     <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
   </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>portable</DebugType>
     <Optimize>true</Optimize>
@@ -33,27 +34,22 @@
   </PropertyGroup>
   
   <PropertyGroup>
-  <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
-  <PublishRepositoryUrl>true</PublishRepositoryUrl>
-  <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
-  <EmbedUntrackedSources>false</EmbedUntrackedSources>
-  <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
-  <IncludeSymbols>true</IncludeSymbols>
-  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-  <AllowedOutputExtensionsInPackageBuildOutputFolder>.pdb;$(AllowedOutputExtensionsInPackageBuildOutputFolder)</AllowedOutputExtensionsInPackageBuildOutputFolder>
-</PropertyGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <PackageReference Include="System.Runtime.Numerics" Version="4.3.0" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System" />
-  </ItemGroup>
+    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>false</EmbedUntrackedSources>
+    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>.pdb;$(AllowedOutputExtensionsInPackageBuildOutputFolder)</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
     <PackageReference Include="System.Runtime.Numerics" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Memory" Version="4.5.3" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19270-01">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

@@ -1,29 +1,41 @@
 ﻿using System;
 using System.Linq;
+using Multiformats.Base.Extensions;
 
 namespace Multiformats.Base
 {
     internal abstract class Base32 : Multibase
     {
-        protected byte[] Decode(string input, bool padding, LetterCasing casing)
+        protected ReadOnlySpan<byte> Decode(ReadOnlySpan<char> input, bool padding, LetterCasing casing)
         {
             if (padding)
                 input = input.TrimEnd('=');
 
-            if (casing == LetterCasing.Lower && input.Any(char.IsUpper))
-                input = input.ToLower();
+            Span<char> data = stackalloc char[input.Length];
 
-            if (casing == LetterCasing.Upper && input.Any(char.IsLower))
-                input = input.ToUpper();
+            switch (casing)
+            {
+                case LetterCasing.Lower when input.Any(char.IsUpper):
+                    if (input.ToLowerInvariant(data) != input.Length)
+                        throw new Exception("ToLowerInvariant could not be performed.");
+                    break;
+                case LetterCasing.Upper when input.Any(char.IsLower):
+                    if (input.ToUpperInvariant(data) != input.Length)
+                        throw new Exception("ToUpperInvariant could not be performed.");
+                    break;
+                default:
+                    input.CopyTo(data);
+                    break;
+            }
 
             var bits = 0;
             var value = 0;
             var index = 0;
-            var output = new byte[(input.Length * 5 / 8) | 0];
+            Span<byte> output = new byte[(data.Length * 5 / 8) | 0];
 
-            for (var i = 0; i < input.Length; i++)
+            for (var i = 0; i < data.Length; ++i)
             {
-                value = (value << 5) | Array.IndexOf(Alphabet, input[i]);
+                value = (value << 5) | Array.IndexOf(Alphabet, data[i]);
                 bits += 5;
 
                 if (bits >= 8)
@@ -36,34 +48,34 @@ namespace Multiformats.Base
             return output;
         }
 
-        protected string Encode(byte[] bytes, bool padding)
+        protected ReadOnlySpan<char> Encode(ReadOnlySpan<byte> bytes, bool padding)
         {
             int bits = 0;
             int value = 0;
-            string output = "";
+            int offset = 0;
+            Span<char> result = new char[bytes.Length * 3];
 
-            for (var i = 0; i < bytes.Length; i++)
+            for (var i = 0; i < bytes.Length; ++i)
             {
                 value = (value << 8) | bytes[i];
                 bits += 8;
 
                 while (bits >= 5)
                 {
-                    output += Alphabet[(int)((uint)value >> (bits - 5)) & 31];
+                    result[offset++] = Alphabet[(int)((uint)value >> (bits - 5)) & 31];
                     bits -= 5;
                 }
             }
 
             if (bits > 0)
-                output += Alphabet[(value << (5 - bits)) & 31];
+                result[offset++] = Alphabet[(value << (5 - bits)) & 31];
 
-            if (padding)
+            while (padding && (offset % 8) != 0)
             {
-                while ((output.Length % 8) != 0)
-                    output += '=';
+                result[offset++] = '=';
             }
 
-            return output;
+            return result.Slice(0, offset);
         }
     }
 }
