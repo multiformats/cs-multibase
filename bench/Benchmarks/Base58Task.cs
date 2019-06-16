@@ -1,4 +1,6 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using System;
+using System.Text;
+using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using Multiformats.Base;
 
@@ -6,7 +8,7 @@ namespace Benchmarks
 {
     [CoreJob]
     //[ClrJob]
-    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    //[Orderer(SummaryOrderPolicy.FastestToSlowest)]
     [MemoryDiagnoser, GcServer(true)]
     [RPlotExporter, RankColumn]
     public class Base58Task
@@ -26,9 +28,21 @@ namespace Benchmarks
         public string text;
 
         [Benchmark]
+        public string Encode_Base58Btc() => Multibase.Base58.Encode(Encoding.ASCII.GetBytes(text));
+
+        [Benchmark]
+        public string Encode_Base58BtcV2() => Multibase.Base58_V2.Encode(Encoding.ASCII.GetBytes(text));
+
+        [Benchmark]
+        public string Encode_Base58Btc_SimpleBase() => SimpleBase.Base58.Bitcoin.Encode(Encoding.ASCII.GetBytes(text));
+
+        [Benchmark]
         public byte[] Decode_Base58Btc() => Multibase.Base58.Decode(text);
 
         [Benchmark]
         public byte[] Decode_Base58BtcV2() => Multibase.Base58_V2.Decode(text);
+
+        [Benchmark]
+        public Span<byte> Decode_Base58Btc_SimpleBase() => SimpleBase.Base58.Bitcoin.Decode(text);
     }
 }
