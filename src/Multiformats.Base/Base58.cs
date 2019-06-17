@@ -66,11 +66,17 @@ namespace Multiformats.Base
 
         protected string EncodeWithSpanInner(ReadOnlySpan<byte> b)
         {
+            int bytesLen = b.Length;
+            if (bytesLen == 0)
+            {
+                return string.Empty;
+            }
+
             ReadOnlySpan<char> alphabetSpan = Alphabet;
             var alphabet0 = alphabetSpan[0];
 
             const int growthPercentage = 138;
-            Span<byte> output = stackalloc byte[((b.Length * growthPercentage) / 100) + 1];
+            Span<byte> output = stackalloc byte[((bytesLen * growthPercentage) / 100) + 1];
             var isConsecutive = true;
 
             int length = 0;
@@ -102,7 +108,7 @@ namespace Multiformats.Base
                 length = i;
             }
 
-            if (indexForward == b.Length)
+            if (indexForward == bytesLen)
             {
                 return new string(alphabet0, indexForward);
             }
@@ -140,16 +146,22 @@ namespace Multiformats.Base
 
         protected byte[] DecodeWithSpanInner(string b)
         {
+            var textLen = b.Length;
+            if (textLen == 0)
+            {
+                return Array.Empty<byte>();
+            }
+
             // https://github.com/bitcoin/bitcoin/blob/master/src/base58.cpp
             const int reductionFactor = 733;
 
             ReadOnlySpan<byte> decodeMap = CodecMap.Span;
             ReadOnlySpan<char> alphabet = Alphabet;
-            var len = alphabet.Length;
+            var alphabetLen = alphabet.Length;
 
             Span<byte> result = stackalloc byte[(int)Math.Round(((b.Length * reductionFactor) / 1000.0) + 1)];
-            var index = 0;
 
+            var indexForward = 0;
             var alphabet0 = alphabet[0];
             BigInteger bigInt = 0;
             var isConsecutive = true;
@@ -159,31 +171,7 @@ namespace Multiformats.Base
                 {
                     if (c == alphabet0)
                     {
-                        result[index++] = 0;
-                    }
-                    else
-                    {
-                        isConsecutive = false;
-                    }
-                }
-
-                bigInt = bigInt * len + decodeMap[c];
-            }
-
-#if NETCOREAPP2_1
-            Span<byte> bigIntArray = stackalloc byte[bigInt.GetByteCount()];
-            bigInt.TryWriteBytes(bigIntArray, out _);
-#else
-            Span<byte> bigIntArray = bigInt.ToByteArray();
-#endif
-            bigIntArray.Reverse();
-            isConsecutive = true;
-            foreach (var item in bigIntArray)
-            {
-                if (isConsecutive)
-                {
-                    if (item == 0)
-                    {
+                        indexForward += 1;
                         continue;
                     }
                     else
@@ -192,10 +180,34 @@ namespace Multiformats.Base
                     }
                 }
 
-                result[index++] = item;
+                int carry = decodeMap[c];
+                for (var indexBackward = result.Length - 1; indexBackward >= 0; indexBackward--)
+                {
+                    carry += 58 * result[indexBackward];
+                    result[indexBackward] = (byte)carry;
+                    carry = carry >> 8;
+                }
             }
 
-            return result.Slice(0, index).ToArray();
+            if (indexForward == textLen)
+            {
+                return new byte[indexForward];
+            }
+
+            var numberOfLeading0 = 0;
+            for (var i = 0; i < result.Length && result[numberOfLeading0] == 0; i++, numberOfLeading0++)
+            {
+            }
+
+            if (numberOfLeading0 > 0)
+            {
+                var resultLen = result.Length - numberOfLeading0;
+                Span<byte> newResult = stackalloc byte[indexForward + resultLen];
+                result.Slice(numberOfLeading0).TryCopyTo(newResult.Slice(indexForward));
+                return newResult.ToArray();
+            }
+
+            return result.ToArray();
         }
     }
 }
