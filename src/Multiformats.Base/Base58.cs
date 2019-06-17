@@ -114,19 +114,30 @@ namespace Multiformats.Base
                 return new string(alphabet0, indexForward);
             }
 
-            var sb = new StringBuilder(new string(alphabet0, indexForward), indexForward + output.Length);
-
-            var start = 0;
-            for (; start < output.Length && output[start] == 0; start++)
             {
-            }
+                var start = 0;
+                for (; start < output.Length && output[start] == 0; start++)
+                {
+                }
 
-            for (var i = start; i < output.Length; i++)
-            {
-                sb.Append(alphabetSpan[output[i]]);
-            }
+                Span<char> sb = stackalloc char[indexForward + output.Length - start];
+                int i;
+                for (i = 0; i < indexForward; i++)
+                {
+                    sb[i] = alphabet0;
+                }
 
-            return sb.ToString();
+                for (var j = start; j < output.Length;)
+                {
+                    sb[i++] = alphabetSpan[output[j++]];
+                }
+
+#if NETCOREAPP2_1
+                return new string(sb);
+#else
+                return new string(sb.ToArray());
+#endif
+            }
         }
 
         protected byte[] DecodeInner(string b)
