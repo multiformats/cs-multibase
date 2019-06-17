@@ -36,56 +36,35 @@ init:
 install:
   - git submodule update --init --recursive
 
-before_build:
-  - appveyor-retry dotnet restore -v Minimal --runtime win10-x64
-
 build_script:
   - ps: |
       if ($env:APPVEYOR_REPO_BRANCH -eq "master")
       {
-        dotnet build "src\Multiformats.Base" -c $env:CONFIGURATION
+        dotnet build -c $env:CONFIGURATION
       }
       else
       {
-        dotnet build "src\Multiformats.Base" -c $env:CONFIGURATION --version-suffix $env:VERSION_SUFFIX
-      }
-
-after_build:
-  - ps: |
-      if ($env:APPVEYOR_REPO_BRANCH -eq "master")
-      {
-        dotnet pack "src\Multiformats.Base" -c $env:CONFIGURATION --no-build -o $env:APPVEYOR_BUILD_FOLDER\artifacts
-      }
-      else
-      {
-        dotnet pack "src\Multiformats.Base" -c $env:CONFIGURATION --no-build --version-suffix $env:VERSION_SUFFIX -o $env:APPVEYOR_BUILD_FOLDER\artifacts
+        dotnet build -c $env:CONFIGURATION --version-suffix $env:VERSION_SUFFIX
       }
 
 test: off
 
-before_test:
-  - nuget install OpenCover -Version 4.6.519 -OutputDirectory .\tools
-
 test_script:
-  - .\tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -returntargetcode -target:"%ProgramFiles%\dotnet\dotnet.exe" -targetargs:"test %APPVEYOR_BUILD_FOLDER%\test\Multiformats.Base.Tests\Multiformats.Base.Tests.csproj -c Debug -f netcoreapp1.1 -l trx;logfilename=TestResult.xml /p:Platform=AnyCPU" -filter:"+[Multiformats.Base]* -[Multiformats.Base.Benchmarks]* -[Multiformats.Base.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:"%APPVEYOR_BUILD_FOLDER%\coverage.xml" -oldStyle
-
-after_test:
-  - ps: |
-        $wc = New-Object 'System.Net.WebClient'
-        $wc.UploadFile("https://ci.appveyor.com/api/testresults/xunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test\Multiformats.Base.Tests\TestResults\TestResult.xml))
+  - dotnet test -c %CONFIGURATION% -f netcoreapp2.2 /p:CollectCoverage=true %APPVEYOR_BUILD_FOLDER%\test\Multiformats.Base.Tests
 
 on_success:
-  - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
-  - pip install codecov
-  - codecov -f "%APPVEYOR_BUILD_FOLDER%\coverage.xml" -X gcov
-  #- ps: appveyor PushArtifact "$env:APPVEYOR_BUILD_FOLDER\artifacts\Multiformats.Base.$env:NUGET_VERSION.nupkg"
+  - choco install codecov
+  - codecov -f "%APPVEYOR_BUILD_FOLDER%\test\Multiformats.Base.Tests\coverage.opencover.xml"
 
 artifacts:
-  - path: artifacts\**\*.*
+  - path: '**\*.nupkg'
+    name: nupkg
+  - path: '**\*.snupkg'
+    name: snupkg
 
 cache:
   - '%USERPROFILE%\.local'
-  - '%USERPROFILE%\.nuget\packages -> **\project.json'
+  - '%USERPROFILE%\.nuget\packages -> **\*.csproj'
   - '%LocalAppData%\NuGet\Cache'
   - '%LocalAppData%\Python'
   - '.\packages -> **\project.json'

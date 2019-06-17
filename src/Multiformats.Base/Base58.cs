@@ -64,6 +64,7 @@ namespace Multiformats.Base
                 .ToArray());
         }
 
+        // Implementation refers to unsafe code in https://github.com/ssg/SimpleBase/blob/master/src/Base58.cs
         protected string EncodeWithSpanInner(ReadOnlySpan<byte> b)
         {
             int bytesLen = b.Length;
@@ -144,6 +145,7 @@ namespace Multiformats.Base
                 .ToArray();
         }
 
+        // Implementation refers to unsafe code in https://github.com/ssg/SimpleBase/blob/master/src/Base58.cs
         protected byte[] DecodeWithSpanInner(string b)
         {
             var textLen = b.Length;

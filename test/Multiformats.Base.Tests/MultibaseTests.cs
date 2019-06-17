@@ -196,6 +196,7 @@ namespace Multiformats.Base.Tests
 
             Assert.Equal(encoded, rencoded);
         }
+
         [Theory]
         [CsvData("test1.csv")]
         public void TestVector_1(string encoding, string encoded)
@@ -204,7 +205,6 @@ namespace Multiformats.Base.Tests
 
             TestVector(encoding, encoded, expected);
         }
-
 
         [Theory]
         [CsvData("test2.csv")]
@@ -295,16 +295,11 @@ namespace Multiformats.Base.Tests
         {
             var pars = testMethod.GetParameters();
             var parameterTypes = pars.Select(par => par.ParameterType).ToArray();
-            using (var csvFile = File.OpenText(_fileName))
+            foreach (var line in File.ReadLines(_fileName).Skip(1))
             {
                 //csvFile.ReadLine();// Delimiter Row: "sep=,". Comment out if not used
-                csvFile.ReadLine(); // Headings Row. Comment out if not used
-                string line;
-                while ((line = csvFile.ReadLine()) != null)
-                {
-                    var row = line.Split(',').Select(c => c.Trim('"', ' ')).ToArray();
-                    yield return ConvertParameters((object[])row, parameterTypes);
-                }
+                var row = line.Split(',').Select(c => c.Trim('"', ' ')).ToArray();
+                yield return ConvertParameters(row, parameterTypes);
             }
         }
 
