@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Sdk;
 
@@ -252,6 +253,19 @@ namespace Multiformats.Base.Tests
 
             Assert.Equal(encoding, mbEncoding);
             Assert.Equal(expected, Encoding.UTF8.GetString(decoded));
+        }
+
+        [Fact]
+        public async Task TestBase58ConcurrentDecoding()
+        {
+            var tasks = Enumerable.Range(1, 10).Select(_ => Task.Run(() =>
+            {
+                var success = Multibase.TryDecode("Z6BLZQNPgws5ahFtr8x", out var encoding, out var bytes);
+                Assert.True(success);
+                Assert.Equal(MultibaseEncoding.Base58Flickr, encoding);
+                Assert.Equal("Concurrency !", Encoding.UTF8.GetString(bytes, 0, bytes.Length));
+            }));
+            await Task.WhenAll(tasks);
         }
     }
 
