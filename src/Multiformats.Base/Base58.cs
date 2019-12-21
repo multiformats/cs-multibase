@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -26,9 +27,9 @@ namespace Multiformats.Base
             }
         }
 
-        private static Dictionary<string, byte[]> _decodeMap;
+        private static readonly ConcurrentDictionary<char[], byte[]> DecodeMap = new ConcurrentDictionary<char[], byte[]>();
 
-        private static byte[] CreateDecodeMap(string alphabet)
+        private static byte[] CreateDecodeMap(char[] alphabet)
         {
             var map = Enumerable.Range(0, 256).Select(b => (byte)0xFF).ToArray();
             for (var i = 0; i < alphabet.Length; i++)
@@ -36,23 +37,9 @@ namespace Multiformats.Base
             return map;
         }
 
-        private static byte[] GetDecodeMap(string alphabet)
-        {
-            if (_decodeMap == null)
-                _decodeMap = new Dictionary<string, byte[]>();
-
-            byte[] map;
-            if (_decodeMap.TryGetValue(alphabet, out map))
-                return map;
-
-            map = CreateDecodeMap(alphabet);
-            _decodeMap.Add(alphabet, map);
-            return map;
-        }
-
         protected byte[] Decode(string b, char[] alphabet)
         {
-            var decodeMap = GetDecodeMap(new string(alphabet));
+            var decodeMap = DecodeMap.GetOrAdd(alphabet, CreateDecodeMap);
             var len = alphabet.Length;
 
             return b.TakeWhile(c => c == alphabet[0])
