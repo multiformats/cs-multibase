@@ -39,17 +39,20 @@ namespace Multiformats.Base
 
         protected byte[] Decode(string b, char[] alphabet)
         {
-            var decodeMap = DecodeMap.GetOrAdd(alphabet, CreateDecodeMap);
-            var len = alphabet.Length;
+            lock (DecodeMap)
+            {
+                var decodeMap = DecodeMap.GetOrAdd(alphabet, CreateDecodeMap);
+                var len = alphabet.Length;
 
-            return b.TakeWhile(c => c == alphabet[0])
-                .Select(_ => (byte)0)
-                .Concat(b.Select(c => decodeMap[c])
-                    .Aggregate<byte, BigInteger>(0, (current, c) => current * len + c)
-                    .ToByteArray()
-                    .Reverse()
-                    .SkipWhile(c => c == 0))
-                .ToArray();
+                return b.TakeWhile(c => c == alphabet[0])
+                    .Select(_ => (byte)0)
+                    .Concat(b.Select(c => decodeMap[c])
+                        .Aggregate<byte, BigInteger>(0, (current, c) => current * len + c)
+                        .ToByteArray()
+                        .Reverse()
+                        .SkipWhile(c => c == 0))
+                    .ToArray();
+            }
         }
     }
 }
